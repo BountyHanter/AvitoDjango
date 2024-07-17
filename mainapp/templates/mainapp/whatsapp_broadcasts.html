@@ -1,0 +1,90 @@
+{% extends 'mainapp/nav_whatsapp_template.html' %}
+{% load static %}
+
+{% block title %}Рассылки Whatsapp{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Список рассылок</h1>
+            <ul class="list-group account-list" id="broadcastList">
+                <!-- Динамическое содержание будет вставлено здесь -->
+            </ul>
+            <button class="btn btn-success mt-2" data-toggle="modal" data-target="#addBroadcastModal">Создать рассылку</button>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal for viewing broadcast details -->
+<div class="modal fade" id="viewBroadcastModal" tabindex="-1" aria-labelledby="viewBroadcastModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="viewBroadcastModalLabel">Детали рассылки</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="broadcastStatus"></p>
+                <p id="broadcastCount"></p>
+                <div class="form-group">
+                    <label for="broadcastPhoneNumbers">Номера рассылки</label>
+                    <textarea class="form-control" id="broadcastPhoneNumbers" rows="10" readonly></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for adding broadcast -->
+<div class="modal fade" id="addBroadcastModal" tabindex="-1" aria-labelledby="addBroadcastModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addBroadcastModalLabel">Добавить новую рассылку</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addBroadcastForm">
+                    <div class="form-group">
+                        <label for="broadcastName">Имя рассылки</label>
+                        <input type="text" class="form-control" id="broadcastName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="broadcastAccount">Аккаунт рассылки</label>
+                        <select class="form-control" id="broadcastAccount" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="broadcastNumbers">Номера рассылки</label>
+                        <input type="text" class="form-control" id="broadcastNumbers">
+                    </div>
+                    <div class="form-group">
+                        <label for="broadcastExcel">База номеров Excel</label>
+                        <input type="file" class="form-control-file" id="broadcastExcel">
+                    </div>
+                    <div class="form-group">
+                        <label for="broadcastTemplate">Шаблон для рассылки</label>
+                        <select class="form-control" id="broadcastTemplate" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="broadcastMinTime">Минимальное время (секунды)</label>
+                        <input type="number" class="form-control" id="broadcastMinTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="broadcastMaxTime">Максимальное время (секунды)</label>
+                        <input type="number" class="form-control" id="broadcastMaxTime" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Создать рассылку</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

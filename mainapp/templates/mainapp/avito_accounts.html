@@ -1,0 +1,296 @@
+{% extends 'mainapp/nav_avito_template.html' %}
+{% load static %}
+
+{% block title %}Настройки аккаунта Avito{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Список аккаунтов</h1>
+            <ul class="list-group account-list" id="accountList">
+                {% for account in accounts %}
+                    <li class="list-group-item account-item" data-toggle="modal" data-target="#editAccountModal" data-id="{{ account.id }}">{{ account.name }}</li>
+                {% endfor %}
+            </ul>
+            <button class="btn btn-success add-account-btn mt-2" data-toggle="modal" data-target="#addAccountModal">Добавить аккаунт</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for adding account -->
+<div class="modal fade" id="addAccountModal" tabindex="-1" aria-labelledby="addAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addAccountModalLabel">Новый аккаунт</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger d-none" id="addAccountError"></div>
+                <form id="addAccountForm">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="newAccountName">Имя аккаунта</label>
+                        <input type="text" class="form-control" id="newAccountName" name="name" placeholder="Введите имя аккаунта" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newClientId">Client_id</label>
+                        <input type="text" class="form-control" id="newClientId" name="client_id" placeholder="Введите Client_id" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newClientSecret">Client_secret</label>
+                        <input type="text" class="form-control" id="newClientSecret" name="client_secret" placeholder="Введите Client_secret" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newAssistantKey">Assistant_key</label>
+                        <input type="text" class="form-control" id="newAssistantKey" name="assistant_key" placeholder="Введите Assistant_key" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newTriggers">Триггеры</label>
+                        <input type="text" class="form-control" id="newTriggers" name="triggers" placeholder="Введите Триггеры (Каждый триггер через /)">
+                    </div>
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="newCheckPhone" name="check_phone">
+                            <label class="form-check-label" for="newCheckPhone">Триггер номера телефона</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="newTgManager">Телеграм менеджера</label>
+                        <input type="text" class="form-control" id="newTgManager" name="tg_manager" placeholder="Введите id Телеграма менеджера" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newWaitTime">Время сбора сообщений</label>
+                        <input type="number" class="form-control" id="newWaitTime" name="wait_time" placeholder="Введите время сбора сообщений (в секундах)" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-success" id="addAccountBtn">Создать аккаунт</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for editing account -->
+<div class="modal fade" id="editAccountModal" tabindex="-1" aria-labelledby="editAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editAccountModalLabel">Редактировать аккаунт</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger d-none" id="editAccountError"></div>
+                <form id="editAccountForm">
+                    {% csrf_token %}
+                    <input type="hidden" id="editAccountId" name="id">
+                    <input type="hidden" id="editUserId" name="user_id"> <!-- Скрытое поле для user_id -->
+                    <div class="form-group">
+                        <label for="editAccountName">Имя аккаунта</label>
+                        <input type="text" class="form-control" id="editAccountName" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editClientId">Client_id</label>
+                        <input type="text" class="form-control" id="editClientId" name="client_id" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editClientSecret">Client_secret</label>
+                        <input type="text" class="form-control" id="editClientSecret" name="client_secret" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editAssistantKey">Assistant_key</label>
+                        <input type="text" class="form-control" id="editAssistantKey" name="assistant_key" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTriggers">Триггеры</label>
+                        <input type="text" class="form-control" id="editTriggers" name="triggers">
+                    </div>
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="editCheckPhone" name="check_phone">
+                            <label class="form-check-label" for="editCheckPhone">Триггер номера телефона</label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTgManager">Телеграм менеджера</label>
+                        <input type="text" class="form-control" id="editTgManager" name="tg_manager" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editWaitTime">Время сбора сообщений</label>
+                        <input type="number" class="form-control" id="editWaitTime" name="wait_time" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                <button type="button" class="btn btn-primary" id="saveChangesBtn">Сохранить изменения</button>
+                <button type="button" class="btn btn-danger" id="deleteAccountBtn">Удалить аккаунт</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.account-item:hover {
+    background-color: #e1e1e1;
+    cursor: pointer;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    const csrftoken = getCookie('csrftoken');
+
+    function validateForm(form, errorDiv) {
+        let isValid = true;
+        let errorMessages = [];
+
+        errorDiv.classList.add('d-none');
+        errorDiv.innerHTML = '';
+
+        const requiredFields = ['name', 'client_id', 'client_secret', 'assistant_key', 'tg_manager', 'wait_time'];
+        requiredFields.forEach(field => {
+            const input = form.querySelector(`[name="${field}"]`);
+            if (!input.value.trim()) {
+                isValid = false;
+                errorMessages.push(`Поле "${input.previousElementSibling.innerText}" обязательно для заполнения.`);
+            }
+        });
+
+        if (!isValid) {
+            errorDiv.classList.remove('d-none');
+            errorDiv.innerHTML = errorMessages.join('<br>');
+        }
+
+        return isValid;
+    }
+
+    document.getElementById('addAccountBtn').addEventListener('click', function() {
+        const form = document.getElementById('addAccountForm');
+        const errorDiv = document.getElementById('addAccountError');
+
+        if (validateForm(form, errorDiv)) {
+            const formData = new FormData(form);
+
+            fetch("{% url 'add_account' %}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': csrftoken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    console.error(data.error || data.errors);
+                    errorDiv.classList.remove('d-none');
+                    errorDiv.innerHTML = (data.error || Object.values(data.errors).join('<br>')).replace(/\\n/g, '<br>');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                errorDiv.classList.remove('d-none');
+                errorDiv.innerHTML = 'Ошибка при добавлении аккаунта. Пожалуйста, попробуйте еще раз.';
+            });
+        }
+    });
+
+    document.querySelectorAll('.list-group-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const accountId = this.getAttribute('data-id');
+            fetch(`/accounts/edit/${accountId}/`)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('editAccountId').value = data.id;
+                    document.getElementById('editAccountName').value = data.name;
+                    document.getElementById('editClientId').value = data.client_id;
+                    document.getElementById('editClientSecret').value = data.client_secret;
+                    document.getElementById('editAssistantKey').value = data.assistant_key;
+                    document.getElementById('editTriggers').value = data.triggers;
+                    document.getElementById('editCheckPhone').checked = data.check_phone;
+                    document.getElementById('editTgManager').value = data.tg_manager;
+                    document.getElementById('editWaitTime').value = data.wait_time;
+                    document.getElementById('editUserId').value = data.user_id;  // Заполняем скрытое поле user_id
+                })
+                .catch(error => console.error('Error:', error));
+        });
+    });
+
+    document.getElementById('saveChangesBtn').addEventListener('click', function() {
+        const form = document.getElementById('editAccountForm');
+        const errorDiv = document.getElementById('editAccountError');
+
+        if (validateForm(form, errorDiv)) {
+            const formData = new FormData(form);
+
+            fetch(`/accounts/edit/${formData.get('id')}/`, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': csrftoken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    console.error(data.error || data.errors);
+                    errorDiv.classList.remove('d-none');
+                    errorDiv.innerHTML = (data.error || Object.values(data.errors).join('<br>')).replace(/\\n/g, '<br>');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                errorDiv.classList.remove('d-none');
+                errorDiv.innerHTML = 'Ошибка при сохранении изменений. Пожалуйста, попробуйте еще раз.';
+            });
+        }
+    });
+
+    document.getElementById('deleteAccountBtn').addEventListener('click', function() {
+        const accountId = document.getElementById('editAccountId').value;
+        fetch(`/accounts/delete/${accountId}/`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': csrftoken
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                console.error(data.errors);
+                alert('Ошибка при удалении аккаунта');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+});
+</script>
+{% endblock %}

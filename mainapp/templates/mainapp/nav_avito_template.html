@@ -1,0 +1,103 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}My Site{% endblock %}</title>
+    <!-- Fonts and icons -->
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- CSS Files -->
+    <link id="pagestyle" href="{% static 'mainapp/css/material-dashboard.css' %}" rel="stylesheet" />
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .main-content {
+            margin-left: 250px; /* Adjust based on the width of your sidenav */
+            padding: 20px;
+        }
+        .rounded-corners {
+            border-radius: 30px; /* Adjust the value to control the roundness */
+        }
+
+        /* Убедитесь, что у бокового меню более низкий z-index */
+        .sidenav {
+            z-index: 1040; /* Более низкий z-index, чем у модального окна */
+        }
+
+        /* Убедитесь, что у модального окна более высокий z-index */
+        .modal {
+            z-index: 1050; /* Убедитесь, что z-index больше, чем у бокового меню */
+        }
+    </style>
+</head>
+<body>
+
+<aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3 bg-gradient-dark" id="sidenav-main">
+    <div class="sidenav-header">
+        <i class="fas fa-times p-3 cursor-pointer text-white opacity-5 position-absolute end-0 top-0 d-none d-xl-none" aria-hidden="true" id="iconSidenav"></i>
+        <a class="navbar-brand m-0" href="#">
+            <img src="{% static 'mainapp/images/Avito.png' %}" class="navbar-brand-img h-100 rounded-corners" alt="main_logo">
+            <span class="ms-1 font-weight-bold text-white">Ассистенты</span>
+        </a>
+    </div>
+    <hr class="horizontal light mt-0 mb-2">
+    <div class="collapse navbar-collapse w-auto" id="sidenav-collapse-main">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{% url 'avito_accounts' %}">
+                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="material-icons opacity-10">home</i>
+                    </div>
+                    <span class="nav-link-text ms-1">Аккаунты</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{% url 'avito_chats' %}">
+                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="material-icons opacity-10">forum</i>
+                    </div>
+                    <span class="nav-link-text ms-1">Чаты</span>
+                </a>
+            </li>
+            {% if user.is_superuser %}
+            <li class="nav-item">
+                <a class="nav-link text-white" href="/admin/">
+                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="material-icons opacity-10">admin_panel_settings</i>
+                    </div>
+                    <span class="nav-link-text ms-1">Админ Панель</span>
+                </a>
+            </li>
+            {% endif %}
+            <li class="nav-item">
+                <a class="nav-link text-white" href="{% url 'whatsapp_accounts' %}">
+                    <div class="text-white text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="fab fa-whatsapp opacity-10"></i>
+                    </div>
+                    <span class="nav-link-text ms-1">Whatsapp</span>
+                </a>
+            </li>
+        </ul>
+        <hr class="horizontal light mt-0 mb-2">
+        <div class="text-white text-center">
+            <span class="nav-link-text">{{ username }}</span> <!-- Имя пользователя -->
+        </div>
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-block">Выйти из аккаунта</button>
+        </form>
+    </div>
+</aside>
+
+<main class="main-content">
+    {% block content %}{% endblock %}
+</main>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

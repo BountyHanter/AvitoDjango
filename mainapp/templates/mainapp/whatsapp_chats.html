@@ -1,0 +1,53 @@
+{% extends 'mainapp/nav_whatsapp_template.html' %}
+{% load static %}
+
+{% block title %}Чаты Whatsapp{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Список чатов</h1>
+            <ul class="list-group account-list" id="accountList">
+                <!-- Динамическое содержание будет вставлено здесь -->
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal for viewing chat messages -->
+<div class="modal fade" id="messagesModal" tabindex="-1" aria-labelledby="messagesModalLabel" aria-hidden="true" style="z-index: 1050;">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="messagesModalLabel">Сообщения</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="chatName">Имя чата</label>
+                    <p id="chatName"></p>
+                </div>
+                <div id="messagesList" class="list-group">
+                    <!-- Messages will be dynamically inserted here -->
+                </div>
+                <div class="modal-footer">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="messageInput" placeholder="Введите сообщение">
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" id="sendMessageButton">Отправить</button>
+                        </div>
+                    </div>
+                    <button id="startButton" class="btn btn-success">Старт</button>
+                    <button id="stopButton" class="btn btn-danger">Стоп</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends 'mainapp/nav_whatsapp_template.html' %}
+{% load static %}
+
+{% block title %}Шаблоны Whatsapp{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Список шаблонов</h1>
+            <ul class="list-group account-list" id="templateList">
+                <!-- Динамическое содержание будет вставлено здесь -->
+            </ul>
+            <button class="btn btn-success mt-2" data-toggle="modal" data-target="#addTemplateModal">Создать шаблон</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for editing template -->
+<div class="modal fade" id="editTemplateModal" tabindex="-1" aria-labelledby="editTemplateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editTemplateModalLabel">Редактировать шаблон</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editTemplateForm">
+                    <input type="hidden" id="editTemplateId">
+                    <div class="form-group">
+                        <label for="editTemplateName">Имя</label>
+                        <input type="text" class="form-control" id="editTemplateName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTemplateContent">Текст шаблона</label>
+                        <div><label>Пример для рандомизации: {Привет/Здравствуй/Рад видеть}</label></div>
+                        <textarea class="form-control" id="editTemplateContent" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for adding template -->
+<div class="modal fade" id="addTemplateModal" tabindex="-1" aria-labelledby="addTemplateModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addTemplateModalLabel">Добавить новый шаблон</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addTemplateForm">
+                    <div class="form-group">
+                        <label for="addTemplateName">Имя</label>
+                        <input type="text" class="form-control" id="addTemplateName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addTemplateContent">Текст шаблона</label>
+                        <div><label>Пример для рандомизации: {Привет/Здравствуй/Рад видеть}</label></div>
+                        <textarea class="form-control" id="addTemplateContent" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Создать</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

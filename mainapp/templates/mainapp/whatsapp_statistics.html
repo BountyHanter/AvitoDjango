@@ -1,0 +1,39 @@
+{% extends 'mainapp/nav_whatsapp_template.html' %}
+{% load static %}
+
+{% block title %}Статистика Whatsapp{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Статистика</h1>
+            <form id="statsForm">
+                <div class="form-group">
+                    <label for="accountSelect">Выберите аккаунт</label>
+                    <select class="form-control" id="accountSelect" required>
+                        <!-- Аккаунты будут динамически загружены сюда -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="startDate">Дата начала</label>
+                    <input type="date" class="form-control" id="startDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="endDate">Дата конца</label>
+                    <input type="date" class="form-control" id="endDate" required>
+                </div>
+                <button type="button" class="btn btn-primary" id="getStatsBtn">Получить статистику</button>
+            </form>
+            <div id="statsResults" class="mt-3">
+                <p>Количество сообщений от ассистента: <span id="assistantMessagesCount"></span></p>
+                <p>Количество отправленных сообщений менеджером: <span id="managerMessagesCount"></span></p>
+                <p>Количество отправленных сообщений рассылкой: <span id="broadcastMessagesCount"></span></p>
+                <p>Количество достигнутых целей: <span id="goalsReached"></span></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

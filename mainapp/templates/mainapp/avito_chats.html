@@ -1,0 +1,299 @@
+{% extends 'mainapp/nav_avito_template.html' %}
+{% block title %}Список чатов Avito{% endblock %}
+
+{% block content %}
+<style>
+    .chat-list {
+        display: none; /* Чаты скрыты по умолчанию */
+        width: 95%; /* Ширина чатов меньше */
+        margin-left: 2%; /* Отступ слева для визуального различия */
+    }
+    .rounded-corners {
+        border-radius: 30px; /* Adjust the value to control the roundness */
+    }
+    .message-container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 10px;
+    }
+    .message-container.right {
+        align-items: flex-end;
+    }
+    .message-bubble {
+        display: inline-block;
+        padding: 10px 20px;
+        margin: 5px 0;
+        border-radius: 20px;
+        max-width: 70%;
+        word-wrap: break-word;
+    }
+    .message-bubble.right {
+        background-color: #dcf8c6;
+    }
+    .message-bubble.left {
+        background-color: #f1f0f0;
+    }
+    .message-time {
+        display: block;
+        font-size: 0.8em;
+        color: #999;
+        margin-top: 5px;
+    }
+    .modal-body {
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+    .chat-list-item img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 10px;
+    }
+    .chat-list-item {
+        display: flex;
+        align-items: center;
+        cursor: default; /* Убираем указатель пальца */
+    }
+    .highlighted-chat {
+        background-color: #d89684; /* Мягкое выделение */
+    }
+</style>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Список чатов</h1>
+            <ul class="list-group account-list" id="accountList">
+                {% for account in accounts %}
+                <li class="list-group-item account-item" data-account-id="{{ account.id }}" data-user-id="{{ account.user_id }}">
+                    <div class="chat-list-item">
+                        <div>
+                            <h5>{{ account.name }}</h5>
+                            <button class="btn btn-primary btn-sm toggle-chat-list">Показать чаты</button>
+                        </div>
+                    </div>
+                    <ul class="list-group chat-list" data-account-id="{{ account.id }}">
+                        {% for chat in chats %}
+                        {% if chat.user_id == account.user_id %}
+                        <li class="list-group-item chat-item{% if chat.status %} highlighted-chat{% endif %}" data-chat-id="{{ chat.chat_id }}" data-status="{{ chat.status }}">
+                            <div class="chat-list-item">
+                                <img src="{{ chat.user_pic }}" alt="Chat Picture">
+                                <div>
+                                    <h6>{{ chat.chat_name }}</h6>
+                                    <button class="btn btn-primary btn-sm view-chat-messages" data-chat-id="{{ chat.chat_id }}">Просмотр сообщений</button>
+                                </div>
+                            </div>
+                        </li>
+                        {% endif %}
+                        {% endfor %}
+                    </ul>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for viewing chat messages -->
+<div class="modal fade" id="messagesModal" tabindex="-1" aria-labelledby="messagesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="messagesModalLabel">Сообщения</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="messagesList" class="list-group">
+                    <!-- Messages will be dynamically inserted here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="form-group w-100">
+                    <label for="messageInput">Сообщение</label>
+                    <input type="text" class="form-control" id="messageInput" placeholder="Введите сообщение">
+                </div>
+                <a id="chatLink" href="#" target="_blank">Ссылка на чат</a>
+                <button type="button" class="btn btn-success" id="toggleChatStatusBtn">Старт</button>
+                <button type="button" class="btn btn-primary" id="sendMessageBtn">Отправить сообщение</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Функция для получения CSRF токена
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    const csrftoken = getCookie('csrftoken');
+
+    document.querySelectorAll('.toggle-chat-list').forEach(button => {
+        button.addEventListener('click', function() {
+            const accountId = this.closest('.account-item').dataset.accountId;
+            document.querySelectorAll(`.chat-list[data-account-id="${accountId}"]`).forEach(chatList => {
+                if (chatList.style.display === 'none' || chatList.style.display === '') {
+                    chatList.style.display = 'block';
+                } else {
+                    chatList.style.display = 'none';
+                }
+            });
+        });
+    });
+
+    document.querySelectorAll('.view-chat-messages').forEach(button => {
+        button.addEventListener('click', async function() {
+            const chatId = this.dataset.chatId;
+            const accountItem = this.closest('.account-item');
+            const userId = accountItem.dataset.userId;
+            console.log(`Fetching messages for chat ID: ${chatId}, user ID: ${userId}`);
+            const response = await fetch(`/messages/${chatId}/`);
+            const data = await response.json();
+            console.log('Received messages:', data.messages);
+            const messagesList = document.getElementById('messagesList');
+            messagesList.innerHTML = '';
+            data.messages.forEach(msg => {
+                console.log(`Processing message: ${msg.content}, sender ID: ${msg.sender_id}`);
+                const messageContainer = document.createElement('div');
+                messageContainer.classList.add('message-container', msg.sender_id === userId ? 'right' : 'left');
+                const messageBubble = document.createElement('div');
+                messageBubble.classList.add('message-bubble', msg.sender_id === userId ? 'right' : 'left');
+                messageBubble.textContent = msg.content;
+
+                // Добавление времени сообщения
+                const messageTime = document.createElement('div');
+                messageTime.classList.add('message-time');
+                const date = new Date(msg.timestamp);
+                messageTime.textContent = date.toLocaleString('ru-RU', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                messageBubble.appendChild(messageTime);
+
+                messageContainer.appendChild(messageBubble);
+                messagesList.appendChild(messageContainer);
+            });
+            const chatLink = document.getElementById('chatLink');
+            chatLink.href = `https://www.avito.ru/profile/messenger/channel/${chatId}`;
+
+            // Check if chat is in ignored list
+            const ignoredResponse = await fetch(`/ignored_chats/check/${chatId}/`);
+            const ignoredData = await ignoredResponse.json();
+            const toggleChatStatusBtn = document.getElementById('toggleChatStatusBtn');
+            if (ignoredData.is_ignored) {
+                toggleChatStatusBtn.textContent = 'Старт';
+                toggleChatStatusBtn.classList.remove('btn-danger');
+                toggleChatStatusBtn.classList.add('btn-success');
+            } else {
+                toggleChatStatusBtn.textContent = 'Стоп';
+                toggleChatStatusBtn.classList.remove('btn-success');
+                toggleChatStatusBtn.classList.add('btn-danger');
+            }
+            toggleChatStatusBtn.dataset.chatId = chatId;
+
+            // Удалить выделение непрочитанного сообщения
+            const chatItem = document.querySelector(`.chat-item[data-chat-id="${chatId}"]`);
+            chatItem.classList.remove('highlighted-chat');
+
+            $('#messagesModal').modal('show');
+        });
+    });
+
+    document.getElementById('toggleChatStatusBtn').addEventListener('click', async function() {
+        const chatId = this.dataset.chatId;
+        const action = this.textContent === 'Старт' ? 'start' : 'stop';
+        const response = await fetch(`/ignored_chats/toggle/${chatId}/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify({ action })
+        });
+        const data = await response.json();
+        if (data.success) {
+            if (action === 'start') {
+                this.textContent = 'Стоп';
+                this.classList.remove('btn-success');
+                this.classList.add('btn-danger');
+            } else {
+                this.textContent = 'Старт';
+                this.classList.remove('btn-danger');
+                this.classList.add('btn-success');
+            }
+        } else {
+            alert('Не удалось изменить статус чата.');
+        }
+    });
+
+    document.getElementById('sendMessageBtn').addEventListener('click', async function() {
+        const messageInput = document.getElementById('messageInput');
+        const messageText = messageInput.value.trim();
+        if (!messageText) return;
+
+        const chatId = document.getElementById('toggleChatStatusBtn').dataset.chatId;
+        const userId = document.querySelector(`.account-item .chat-item[data-chat-id="${chatId}"]`).closest('.account-item').dataset.userId;
+
+        const response = await fetch('/send_message/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify({
+                user_id: userId,
+                chat_id: chatId,
+                message_text: messageText
+            })
+        });
+
+        if (response.ok) {
+            const messagesList = document.getElementById('messagesList');
+            const messageContainer = document.createElement('div');
+            messageContainer.classList.add('message-container', 'right');
+            const messageBubble = document.createElement('div');
+            messageBubble.classList.add('message-bubble', 'right');
+            messageBubble.textContent = messageText;
+
+            // Добавление времени сообщения
+            const messageTime = document.createElement('div');
+            messageTime.classList.add('message-time');
+            const date = new Date();
+            messageTime.textContent = date.toLocaleString('ru-RU', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            messageBubble.appendChild(messageTime);
+
+            messageContainer.appendChild(messageBubble);
+            messagesList.appendChild(messageContainer);
+            messageInput.value = '';
+        } else {
+            const data = await response.json();
+            alert(`Ошибка при отправке сообщения: ${data.message}`);
+        }
+    });
+});
+</script>
+{% endblock %}

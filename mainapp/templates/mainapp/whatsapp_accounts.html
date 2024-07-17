@@ -1,0 +1,164 @@
+{% extends 'mainapp/nav_whatsapp_template.html' %}
+{% load static %}
+
+{% block title %}Настройки аккаунта Whatsapp{% endblock %}
+
+{% block content %}
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>Список аккаунтов</h1>
+            <ul class="list-group account-list" id="accountList">
+                <!-- Динамическое содержание будет вставлено здесь -->
+            </ul>
+            <button class="btn btn-success add-account-btn mt-2" data-toggle="modal" data-target="#addAccountModal">Добавить аккаунт</button>
+        </div>
+    </div>
+</div>
+
+
+<!-- Модальное окно добавления аккаунта -->
+<div class="modal fade" id="addAccountModal" tabindex="-1" role="dialog" aria-labelledby="addAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addAccountModalLabel">Добавить новый аккаунт</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addAccountForm">
+                    <div class="form-group">
+                        <label for="addName">Имя</label>
+                        <input type="text" class="form-control" id="addName" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addPhoneNumber">Номер телефона (начиная с 7, без плюса)</label>
+                        <input type="text" class="form-control" id="addPhoneNumber" name="phoneNumber" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addAssistantKey">Assistant Key</label>
+                        <input type="text" class="form-control" id="addAssistantKey" name="assistant_key" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addWhatsappManager">Whatsapp Manager (начиная с 7, без плюса)</label>
+                        <input type="text" class="form-control" id="addWhatsappManager" name="whatsapp_manager" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addWaitTime">Время сбора сообщений (в секундах)</label>
+                        <input type="number" class="form-control" id="addWaitTime" name="wait_time" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addTriggers">Triggers (через запятую)</label>
+                        <input type="text" class="form-control" id="addTriggers" name="triggers_user">
+                    </div>
+                    <div class="form-group">
+                        <label for="addTriggersAI">Триггер ИИ (через запятую)</label>
+                        <input type="text" class="form-control" id="addTriggersAI" name="triggers_AI">
+                    </div>
+                    <div class="form-group">
+                        <label for="addBotText">Текст напоминания бота</label>
+                        <input type="text" class="form-control" id="addBotText" name="bot_text">
+                    </div>
+                    <div class="form-group">
+                        <label for="addBotInterval">Интервал между уведомлениями бота (в минутах)</label>
+                        <input type="number" class="form-control" id="addBotInterval" name="bot_interval" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addManagerInterval">Время до уведомления менеджеру (в минутах)</label>
+                        <input type="number" class="form-control" id="addManagerInterval" name="manager_interval" required>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="addVoices" name="voices">
+                        <label class="form-check-label" for="addVoices">Обработка голосовых</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="addAccountBtn">Добавить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно редактирования аккаунта -->
+<div class="modal fade" id="editAccountModal" tabindex="-1" role="dialog" aria-labelledby="editAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editAccountModalLabel">Редактировать аккаунт</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editAccountForm">
+                    <input type="hidden" id="editClientId" name="clientId">
+                    <div class="form-group">
+                        <label for="editName">Имя</label>
+                        <input type="text" class="form-control" id="editName" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editAssistantKey">Assistant Key</label>
+                        <input type="text" class="form-control" id="editAssistantKey" name="assistant_key" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editWhatsappManager">Whatsapp Manager</label>
+                        <input type="text" class="form-control" id="editWhatsappManager" name="whatsapp_manager" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editWaitTime">Время сбора сообщений (в секундах)</label>
+                        <input type="number" class="form-control" id="editWaitTime" name="wait_time" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTriggers">Triggers</label>
+                        <input type="text" class="form-control" id="editTriggers" name="triggers_user">
+                    </div>
+                    <div class="form-group">
+                        <label for="editTriggersAI">Триггер ИИ</label>
+                        <input type="text" class="form-control" id="editTriggersAI" name="triggers_AI">
+                    </div>
+                    <div class="form-group">
+                        <label for="editBotText">Текст напоминания бота</label>
+                        <input type="text" class="form-control" id="editBotText" name="bot_text">
+                    </div>
+                    <div class="form-group">
+                        <label for="editBotInterval">Интервал между уведомлениями бота (в минутах)</label>
+                        <input type="number" class="form-control" id="editBotInterval" name="bot_interval" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editManagerInterval">Время до уведомления менеджеру (в минутах)</label>
+                        <input type="number" class="form-control" id="editManagerInterval" name="manager_interval" required>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="editVoices" name="voices">
+                        <label class="form-check-label" for="editVoices">Обработка голосовых</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="saveChangesBtn">Сохранить изменения</button>
+                    <button type="button" class="btn btn-danger" id="deleteAccountBtn">Удалить аккаунт</button>
+                    <button type="button" class="btn btn-secondary" id="activateAccountBtn">Активировать аккаунт</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно ожидания QR-кода -->
+<div class="modal fade" id="qrCodeModal" tabindex="-1" role="dialog" aria-labelledby="qrCodeModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="qrCodeModalLabel">Ожидание QR-кода</h5>
+            </div>
+            <div class="modal-body text-center">
+                <p>Пожалуйста, подождите, пока QR-код будет сгенерирован...</p>
+                <div id="qrCodeContainer">
+                    <canvas id="qrCanvas"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
