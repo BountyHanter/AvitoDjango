@@ -26,12 +26,12 @@ def get_chat_info(*, user_id, chat_id, access_token):
                 title = chat_data.get('context', {}).get('value', {}).get('title', '')
                 if title:
                     name = f"{name} ({title})"
-                return avatar_default, name
+                return avatar_default, name, title
     elif response.status_code == 403:
         status_code, new_access_token = take_access_token_from_avito(user_id=user_id, save_token_in_db=True)
         if status_code == 200:
-            avatar_default, name = get_chat_info(user_id=user_id, chat_id=chat_id, access_token=new_access_token)
-            return avatar_default, name
+            avatar_default, name, title = get_chat_info(user_id=user_id, chat_id=chat_id, access_token=new_access_token)
+            return avatar_default, name, title
         else:
             logging.debug('check_client_info.py')
             logging.debug(f"Ошибка получения временного токена: {status_code}")
