@@ -35,19 +35,19 @@ def webhook_endpoint(request):
         try:
             payload = json.loads(request.body)
             user_id, author_id, chat_id, content = parse_webhook_payload(payload)
-            print(payload)
+            logging.debug(payload)
             # Немедленно возвращаем ответ
             threading.Thread(target=process_webhook, args=(user_id, author_id, chat_id, content)).start()
 
-            print("Webhook processed successfully.")
+            logging.debug("Webhook processed successfully.")
             return JsonResponse({'status': 'Webhook received'}, status=200)
         except json.JSONDecodeError:
-            print("Invalid JSON received.")
+            logging.debug("Invalid JSON received.")
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except Exception as e:
-            print(f"Error processing webhook: {e}")
+            logging.debug(f"Error processing webhook: {e}")
             return JsonResponse({'error': str(e)}, status=500)
-    print("Invalid request method.")
+    logging.debug("Invalid request method.")
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 
@@ -73,7 +73,7 @@ def user_login(request: HttpRequest) -> HttpResponse:
             auth_login(request, user)
             return redirect('avito_accounts')
         else:
-            print("Invalid login attempt: ", username)  # Отладочное сообщение
+            logging.debug("Invalid login attempt: ", username)  # Отладочное сообщение
             return render(request, 'mainapp/login.html', {'error': 'Неправильный логин или пароль'})
     else:
         return render(request, 'mainapp/login.html')

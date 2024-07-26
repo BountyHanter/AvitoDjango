@@ -23,7 +23,7 @@ COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Копируем остальные файлы проекта в контейнер
-COPY fddf /app/
+COPY . /app/
 
 # Копируем сценарий entrypoint
 COPY entrypoint.sh /app/

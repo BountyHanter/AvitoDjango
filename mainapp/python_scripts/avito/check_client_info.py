@@ -1,3 +1,5 @@
+import logging
+
 import requests
 
 from mainapp.python_scripts.avito.authorization import take_access_token_from_avito
@@ -15,8 +17,8 @@ def get_chat_info(*, user_id, chat_id, access_token):
 
     if response.status_code == 200:
         chat_data = response.json()
-        print('check_client_info.py')
-        print(chat_data)
+        logging.debug('check_client_info.py')
+        logging.debug(chat_data)
         for user in chat_data.get('users', []):
             if user.get('id') != int(user_id):
                 avatar_default = user.get('public_user_profile', {}).get('avatar', {}).get('default')
@@ -31,13 +33,13 @@ def get_chat_info(*, user_id, chat_id, access_token):
             avatar_default, name = get_chat_info(user_id=user_id, chat_id=chat_id, access_token=new_access_token)
             return avatar_default, name
         else:
-            print('check_client_info.py')
-            print(f"Ошибка получения временного токена: {status_code}")
-            print(new_access_token)
+            logging.debug('check_client_info.py')
+            logging.debug(f"Ошибка получения временного токена: {status_code}")
+            logging.debug(new_access_token)
             return None, None
         
     else:
-        print('check_client_info.py')
-        print(f"Ошибка: {response.status_code}")
-        print(response.text)
+        logging.debug('check_client_info.py')
+        logging.debug(f"Ошибка: {response.status_code}")
+        logging.debug(response.text)
         return None, None

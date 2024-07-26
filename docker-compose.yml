@@ -2,19 +2,22 @@ version: '3.8'
 
 services:
   web:
-    build: fddf
+    build: .
     command: gunicorn --bind 0.0.0.0:3200 WhatsappAvitoDjango.wsgi:application
     volumes:
       - .:/app
     env_file:
       - .env
+    ports:
+      - "3200:3200"
+    restart: always
 
   nginx:
     build:
-      context: fddf
+      context: .
       dockerfile: Dockerfile.nginx
     ports:
       - "80:80"
     depends_on:
       - web
-
+    restart: always

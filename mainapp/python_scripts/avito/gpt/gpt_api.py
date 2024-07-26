@@ -1,3 +1,4 @@
+import logging
 import time
 from openai import OpenAI
 import openai
@@ -36,9 +37,9 @@ def create_thread_and_run(user_input, id_assistant):
 
 def pretty_print(messages):
     # 5. Мягкий вывод
-    print("# Messages")
+    logging.debug("# Messages")
     for m in messages:
-        print(f"{m.role}: {m.content[0].text.value}")
+        logging.debug(f"{m.role}: {m.content[0].text.value}")
         if m.role == 'assistant':
             return m.content[0].text.value
 
@@ -48,7 +49,7 @@ def pretty_print2(thread, message):
         thread_id=thread.id, order="asc", after=message.id
     )
     for m in messages:
-        print(f"{m.role}: {m.content[0].text.value}")
+        logging.debug(f"{m.role}: {m.content[0].text.value}")
         return m.content[0].text.value
 
 

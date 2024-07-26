@@ -1,3 +1,4 @@
+import logging
 from time import sleep
 
 import requests
@@ -11,7 +12,7 @@ def send_telegram_message(chat_id, author_id, trigger):
     tg_manager = get_tg_manager(author_id)
 
     if tg_manager is None:
-        print(f"No tg_manager found for author_id {author_id}")
+        logging.debug(f"No tg_manager found for author_id {author_id}")
         return
 
     token = '7069682876:AAFSpj-SHqEBECrzsd1916gCSwYp0gJBKrU'
@@ -34,10 +35,10 @@ def send_telegram_message(chat_id, author_id, trigger):
 
         # Проверка ответа
         if response.status_code == 200:
-            print("Сообщение успешно отправлено менеджеру!")
+            logging.debug("Сообщение успешно отправлено менеджеру!")
             sleep(1)
         else:
-            print('Ошибка при отправке сообщения:', response.status_code, response.text)
+            logging.debug('Ошибка при отправке сообщения:', response.status_code, response.text)
 
 
 def send_telegram_message_about_trigger(chat_id):
@@ -57,6 +58,6 @@ def send_telegram_message_about_trigger(chat_id):
 
     # Проверка ответа
     if response.status_code == 200:
-        print("Сообщение успешно отправлено администратору!")
+        logging.debug("Сообщение успешно отправлено администратору!")
     else:
-        print('Ошибка при отправке сообщения:', response.status_code, response.text)
+        logging.debug('Ошибка при отправке сообщения:', response.status_code, response.text)

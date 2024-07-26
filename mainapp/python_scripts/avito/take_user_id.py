@@ -1,3 +1,5 @@
+import logging
+
 import requests
 
 
@@ -14,22 +16,22 @@ def get_authorized_user_info(access_token):
             user_info = response.json()
             return user_info.get('id')
         elif response.status_code == 401:
-            print('take_user_id.py')
-            print("Требуется аутентификация")
+            logging.debug('take_user_id.py')
+            logging.debug("Требуется аутентификация")
         elif response.status_code == 403:
-            print('take_user_id.py')
-            print("Неверный Token/Oauth Scope")
+            logging.debug('take_user_id.py')
+            logging.debug("Неверный Token/Oauth Scope")
             return 403
         elif response.status_code == 500:
-            print('take_user_id.py')
-            print("Внутренняя ошибка метода API")
+            logging.debug('take_user_id.py')
+            logging.debug("Внутренняя ошибка метода API")
         elif response.status_code == 503:
-            print('take_user_id.py')
-            print("Метод API временно недоступен")
+            logging.debug('take_user_id.py')
+            logging.debug("Метод API временно недоступен")
         else:
-            print('take_user_id.py')
-            print(f"Неожиданный статус ответа: {response.status_code}")
+            logging.debug('take_user_id.py')
+            logging.debug(f"Неожиданный статус ответа: {response.status_code}")
     except requests.exceptions.RequestException as e:
-        print('take_user_id.py')
-        print(f"Ошибка при выполнении запроса: {e}")
+        logging.debug('take_user_id.py')
+        logging.debug(f"Ошибка при выполнении запроса: {e}")
     return None

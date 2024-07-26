@@ -23,7 +23,7 @@ def parse_webhook_payload(payload):
 def should_ignore_webhook(user_id, author_id):
     """Проверяет, нужно ли игнорировать вебхук на основе user_id и author_id."""
     if user_id == author_id or (author_id is not None and 0 <= author_id <= 10):
-        print("Webhook ignored due to user_id and author_id match or author_id in range 0-10.")
+        logging.debug("Webhook ignored due to user_id and author_id match or author_id in range 0-10.")
         return True
     return False
 
@@ -35,11 +35,11 @@ def check_phone_number(content):
 
 def check_triggers(content, triggers):
     """Проверяет наличие триггеров в сообщении."""
-    print('Триггеры и контент')
-    print(triggers, content)
+    logging.debug('Триггеры и контент')
+    logging.debug(triggers, content)
     for trigger in triggers.split('/'):
         if trigger.lower() in content.lower():
-            print('Чат будет добавлен в игнорируемые, так как сработал триггер по слову')
+            logging.debug('Чат будет добавлен в игнорируемые, так как сработал триггер по слову')
             return True
     return False
 
@@ -83,7 +83,7 @@ def process_webhook(user_id, author_id, chat_id, content):
     if should_ignore_webhook(user_id, author_id):
         return
     if AvitoIgnoredChat.objects.filter(chat_id=chat_id).exists():
-        print(f'Чат {chat_id} игнорируется.')
+        logging.debug(f'Чат {chat_id} игнорируется.')
         return
     collect_messages(chat_id, user_id, author_id, content)
 
@@ -100,10 +100,10 @@ def collect_messages(chat_id, user_id, author_id, content):
     # Если таймер для этого чата еще не существует, создаем его
     if chat_id not in timers:
         try:
-            print(user_id)
+            logging.debug(user_id)
             wait_time = AvitoAccount.objects.get(user_id=user_id).wait_time
         except AvitoAccount.DoesNotExist:
-            print('Время в базе данных не найдено, по умолчанию 60 секунд')
+            logging.debug('Время в базе данных не найдено, по умолчанию 60 секунд')
             wait_time = 60  # Время ожидания по умолчанию, если не найдено в базе данных
 
         # Запускаем новый таймер
@@ -127,8 +127,3 @@ def process_collected_messages(chat_id, user_id, author_id):
     if chat_id in timers:
         logging.debug(f'Удаление таймера для чата {chat_id} после обработки')
         timers.pop(chat_id, None)
-
-
-
-def timeout(dd):
-    print('Таймер вышел')

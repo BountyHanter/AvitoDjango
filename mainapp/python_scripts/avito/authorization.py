@@ -1,3 +1,5 @@
+import logging
+
 import requests
 
 from mainapp.models import AvitoAccount
@@ -26,8 +28,8 @@ def take_access_token_from_avito(*, user_id=None, client_id=None, client_secret=
             client_id = account.client_id
             client_secret = account.client_secret
         except AvitoAccount.DoesNotExist:
-            print('authorization.py/take_access_token_from_avito')
-            print('Нет аккаунта с user_id:', user_id)
+            logging.debug('authorization.py/take_access_token_from_avito')
+            logging.debug('Нет аккаунта с user_id:', user_id)
             return 400, 'Нет аккаунта с user_id'
 
     url = 'https://api.avito.ru/token/'
@@ -46,14 +48,14 @@ def take_access_token_from_avito(*, user_id=None, client_id=None, client_secret=
 
     if response.status_code == 200 and 'access_token' in response_data:
         access_token = response_data.get('access_token')
-        print('authorization.py/take_access_token_from_avito')
-        print('Аутентификация прошла успешно. Токен доступа:', access_token)
+        logging.debug('authorization.py/take_access_token_from_avito')
+        logging.debug('Аутентификация прошла успешно. Токен доступа:', access_token)
         if save_token_in_db is True:
             save_access_token(access_token, client_id)
         return 200, access_token
     else:
-        print('authorization.py/take_access_token_from_avito')
-        print('Ошибка аутентификации. Код:', response.status_code, 'Описание:', response.text)
+        logging.debug('authorization.py/take_access_token_from_avito')
+        logging.debug('Ошибка аутентификации. Код:', response.status_code, 'Описание:', response.text)
         return 400, response.text
 
 
@@ -62,8 +64,8 @@ def save_access_token(token, client_id):
         account = AvitoAccount.objects.get(client_id=client_id)
         account.access_token = token
         account.save()
-        print('authorization.py/save_access_token')
-        print('Токен успешно сохранен в базу данных:')
+        logging.debug('authorization.py/save_access_token')
+        logging.debug('Токен успешно сохранен в базу данных:')
     except AvitoAccount.DoesNotExist:
-        print('authorization.py/save_access_token')
-        print('Аккаунта с данным client_id не существует')
+        logging.debug('authorization.py/save_access_token')
+        logging.debug('Аккаунта с данным client_id не существует')

@@ -37,10 +37,10 @@ def update_or_create_timer(chat_id, user_id):
 
 
 def add_to_ignored_chats(chat_id, user_id, should_ping_manager, trigger):
-    print("Добавляем в игнорируемые")
+    logging.debug("Добавляем в игнорируемые")
     # Добавляем чат в игнор-лист
     AvitoIgnoredChat.objects.get_or_create(chat_id=chat_id)
-    print(f"Чат {chat_id} добавлен в игнорируемые так как клиент не ответил/израсходованы токены/сработал триггер")
+    logging.debug(f"Чат {chat_id} добавлен в игнорируемые так как клиент не ответил/израсходованы токены/сработал триггер")
 
     if should_ping_manager:
         send_telegram_message(chat_id, user_id, trigger=trigger)

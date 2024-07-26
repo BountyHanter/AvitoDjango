@@ -1,3 +1,4 @@
+import logging
 import os
 import json
 
@@ -26,7 +27,7 @@ def init_process_gpt(user_id, chat_id, message):
     try:
         chat = AvitoChat.objects.get(chat_id=chat_id)  # Попытка получить объект AvitoChat
         if int(chat.tokens) == 0:  # Если у чата закончились токены
-            print(f"Чат {chat_id} израсходовал токены")
+            logging.debug(f"Чат {chat_id} израсходовал токены")
             add_to_ignored_chats(chat_id, user_id, False, False)
             send_telegram_message_about_trigger(chat_id)
             return
@@ -35,11 +36,11 @@ def init_process_gpt(user_id, chat_id, message):
         pass
     assistant_key = take_assistant_key(user_id)
     if not assistant_key:
-        print(f"Ошибка: assistant_key для user_id {user_id} не найден.")
+        logging.debug(f"Ошибка: assistant_key для user_id {user_id} не найден.")
         return
 
     access_token = load_access_token(user_id=user_id)
-    print("Сообщение клиента - ", message)
+    logging.debug("Сообщение клиента - ", message)
     thread_file_path = os.path.join(USER_DATA_DIR, f'thread_{chat_id}.json')
 
     if not os.path.exists(thread_file_path):
@@ -65,13 +66,13 @@ def init_process_gpt(user_id, chat_id, message):
             chat.tokens = new_current_tokens  # Обновляем значение токенов
             chat.save()  # Сохраняем изменения
         except AttributeError as e:
-            print(f"init_process_gpt Ошибка атрибута: {e}")
+            logging.debug(f"init_process_gpt Ошибка атрибута: {e}")
         except TypeError as e:
-            print(f"init_process_gpt Ошибка типа: {e}")
+            logging.debug(f"init_process_gpt Ошибка типа: {e}")
         except AvitoChat.DoesNotExist as e:
-            print(f"init_process_gpt Ошибка: объект AvitoChat не найден: {e}")
+            logging.debug(f"init_process_gpt Ошибка: объект AvitoChat не найден: {e}")
         except Exception as e:
-            print(f"init_process_gpt Неизвестная ошибка: {e}")
+            logging.debug(f"init_process_gpt Неизвестная ошибка: {e}")
 
         gpt_answer = gpt.pretty_print2(thread, gpt_message)
         send_message(user_id=user_id, message_text=gpt_answer, chat_id=chat_id, upd_status=True)
@@ -89,11 +90,11 @@ def create_chat_in_database(chat_id, user_id, access_token):
             chat_name=user_name,
             user_pic=user_pic
         )
-        print(f'Чат с chat_id {chat_id} успешно создан.')
+        logging.debug(f'Чат с chat_id {chat_id} успешно создан.')
     except IntegrityError:
-        print(f'Ошибка: Чат с chat_id {chat_id} уже существует.')
+        logging.debug(f'Ошибка: Чат с chat_id {chat_id} уже существует.')
     except Exception as e:
-        print(f'Ошибка при работе с базой данных: {e}')
+        logging.debug(f'Ошибка при работе с базой данных: {e}')
 
 
 def save_thread_to_file(thread, filename):
@@ -116,10 +117,10 @@ def take_assistant_key(user_id):
         account = AvitoAccount.objects.get(user_id=user_id)
         assistant_key = account.assistant_key
     except AvitoAccount.DoesNotExist:
-        print(f'user_id {user_id} не найден в avito_accounts.')
+        logging.debug(f'user_id {user_id} не найден в avito_accounts.')
         assistant_key = None
     except Exception as e:
-        print(f'Ошибка при работе с базой данных: {e}')
+        logging.debug(f'Ошибка при работе с базой данных: {e}')
         assistant_key = None
 
     return assistant_key

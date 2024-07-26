@@ -1,3 +1,5 @@
+import logging
+
 from mainapp.models import AvitoChat
 
 
@@ -10,4 +12,4 @@ def update_chat_status(chat_id, status=True):
             chat.status = False
         chat.save()
     except AvitoChat.DoesNotExist:
-        print(f"Чат с chat_id {chat_id} не найден")
+        logging.debug(f"Чат с chat_id {chat_id} не найден")

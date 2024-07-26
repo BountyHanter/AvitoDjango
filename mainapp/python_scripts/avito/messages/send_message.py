@@ -1,3 +1,5 @@
+import logging
+
 import requests
 
 from asgiref.sync import sync_to_async
@@ -26,15 +28,15 @@ def send_message(*, user_id, message_text, chat_id, upd_status=False):
         insert_message_in_database(chat_id, user_id, message_text)
         if upd_status is True:
             update_chat_status(chat_id) # Помечаем чат как не прочитанный
-        print('send_message.py')
-        print('Сообщение успешно отправлено:', response.json())
+        logging.debug('send_message.py')
+        logging.debug('Сообщение успешно отправлено:', response.json())
     except requests.exceptions.HTTPError as e:
         if response.status_code == 403:
-            print('send_message.py')
-            print('Ошибка аутентификации. Попытка получить новый токен...')
+            logging.debug('send_message.py')
+            logging.debug('Ошибка аутентификации. Попытка получить новый токен...')
             take_access_token_from_avito(user_id=user_id)
             send_message(user_id=user_id, message_text=message_text, chat_id=chat_id)  # Повторная отправка сообщения с новым токеном
         else:
-            print('send_message.py')
-            print('Ошибка при отправке сообщения:', response.status_code, response.text)
+            logging.debug('send_message.py')
+            logging.debug('Ошибка при отправке сообщения:', response.status_code, response.text)
 
