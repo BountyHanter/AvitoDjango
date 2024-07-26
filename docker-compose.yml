@@ -3,7 +3,8 @@ version: '3.8'
 services:
   web:
     build: .
-    command: gunicorn --bind 0.0.0.0:3200 WhatsappAvitoDjango.wsgi:application
+    volumes:
+      - static_volume:/app/staticfiles
     env_file:
       - .env
     ports:
@@ -14,8 +15,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.nginx
+    volumes:
+      - static_volume:/usr/share/nginx/html/static
     ports:
       - "80:80"
     depends_on:
       - web
     restart: always
+
+volumes:
+  static_volume:
