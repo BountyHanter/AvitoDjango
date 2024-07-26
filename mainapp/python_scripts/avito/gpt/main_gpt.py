@@ -27,7 +27,7 @@ def init_process_gpt(user_id, chat_id, message):
         chat = AvitoChat.objects.get(chat_id=chat_id)  # Попытка получить объект AvitoChat
         if int(chat.tokens) == 0:  # Если у чата закончились токены
             print(f"Чат {chat_id} израсходовал токены")
-            add_to_ignored_chats(chat_id, user_id, False)
+            add_to_ignored_chats(chat_id, user_id, False, False)
             send_telegram_message_about_trigger(chat_id)
             return
     except AvitoChat.DoesNotExist:

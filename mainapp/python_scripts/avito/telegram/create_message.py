@@ -1,7 +1,7 @@
 from mainapp.models import AvitoMessage
 
 
-def generate_message_text(chat_id, author_id, trigger=True):
+def generate_message_text(chat_id, author_id, trigger):
     # Получаем все сообщения для данного chat_id, отсортированные по timestamp
     messages = AvitoMessage.objects.filter(chat_id=chat_id).order_by('timestamp')
 

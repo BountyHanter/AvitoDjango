@@ -9,7 +9,13 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
+
+import logging.config
+from logging.handlers import TimedRotatingFileHandler
 import os
+import sys
+from datetime import datetime
+
 from pathlib import Path
 
 from django.contrib import staticfiles
@@ -172,14 +178,24 @@ SESSION_SAVE_EVERY_REQUEST = True
 WEBHOOK_API = os.getenv('WEBHOOK_API')
 
 
-LOG_LEVEL = os.getenv('DJANGO_LOG_LEVEL', 'INFO')
+DJANGO_LOG_LEVEL = os.getenv('DJANGO_LOG_LEVEL', 'DEBUG')
+LOG_LEVEL = os.getenv('LOG_LEVEL', 'DEBUG')
+
+# Исключаем логи опроса OpenAI
+class NoHttpCoreOpenAIFilter(logging.Filter):
+    def filter(self, record):
+        return not (
+            record.name.startswith("httpcore") or
+            record.name.startswith("httpx") or
+            record.name.startswith("openai")
+        )
 
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '{levelname} {asctime} {pathname}:{lineno} {module} {message}',
+            'format': '{levelname} {asctime} {pathname} {lineno} {module} {message}',
             'style': '{',
         },
         'simple': {
@@ -187,30 +203,60 @@ LOGGING = {
             'style': '{',
         },
     },
+    'filters': {
+        'exclude_httpcore_openai': {
+            '()': NoHttpCoreOpenAIFilter,
+        },
+    },
     'handlers': {
         'console': {
             'level': LOG_LEVEL,
             'class': 'logging.StreamHandler',
             'formatter': 'verbose',
+            'filters': ['exclude_httpcore_openai'],
+        },
+        'file': {
+            'level': LOG_LEVEL,
+            'class': 'logging.handlers.TimedRotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'app.log'),
+            'when': 'midnight',
+            'backupCount': 7,
+            'formatter': 'verbose',
+            'filters': ['exclude_httpcore_openai'],
         },
     },
     'root': {
-        'handlers': ['console'],
-        'level': 'WARNING',
+        'handlers': ['console', 'file'],
+        'level': 'DEBUG',
     },
-    'django': {
-        'handlers': ['console'],
-        'level': LOG_LEVEL,
-        'propagate': True,
-    },
-    'django.request': {
-        'handlers': ['console'],
-        'level': LOG_LEVEL,
-        'propagate': False,
-    },
-    'django.db.backends': {
-        'handlers': ['console'],
-        'level': LOG_LEVEL,
-        'propagate': False,
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': DJANGO_LOG_LEVEL,
+            'propagate': True,
+        },
+        'django.request': {
+            'handlers': ['console', 'file'],
+            'level': DJANGO_LOG_LEVEL,
+            'propagate': False,
+        },
+        'django.db.backends': {
+            'handlers': ['console', 'file'],
+            'level': DJANGO_LOG_LEVEL,
+            'propagate': False,
+        },
+        'django.utils.autoreload': {
+            'handlers': ['console', 'file'],
+            'level': 'WARNING',
+            'propagate': False,
+        },
+        'myapp': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
     },
 }
+
+# Применяем настройки логирования
+logging.config.dictConfig(LOGGING)
