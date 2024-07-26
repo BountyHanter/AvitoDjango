@@ -58,7 +58,6 @@ staticfiles/
 *.js.map
 
 # Environments
-.env
 .venv
 env/
 venv/
@@ -93,9 +92,6 @@ coverage.xml
 *.cover
 .hypothesis/
 
-entrypoint.sh
-
-docker-compose.yml
 
 # Jupyter Notebook
 .ipynb_checkpoints

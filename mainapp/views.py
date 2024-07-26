@@ -9,6 +9,7 @@ from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpRequest, HttpResponse
 from django.views.decorators.http import require_POST
 
+from WhatsappAvitoDjango.settings import WEBHOOK_API, DEBUG
 from .models import AvitoAccount, AvitoChat, AvitoMessage, AvitoIgnoredChat
 from .forms import AvitoAccountForm
 from django.shortcuts import get_object_or_404
@@ -18,6 +19,7 @@ import json
 
 from mainapp.python_scripts.avito.authorization import save_access_token, take_access_token_from_avito as token
 from .python_scripts.avito.delete_webhook import delete_webhook
+from .python_scripts.avito.globals import trigger_timers
 from .python_scripts.avito.messages.send_message import send_message
 from .python_scripts.avito.messages.upd_chat_status import update_chat_status
 from .python_scripts.avito.registr_webhook import register_webhook
@@ -33,7 +35,7 @@ def webhook_endpoint(request):
         try:
             payload = json.loads(request.body)
             user_id, author_id, chat_id, content = parse_webhook_payload(payload)
-
+            print(payload)
             # Немедленно возвращаем ответ
             threading.Thread(target=process_webhook, args=(user_id, author_id, chat_id, content)).start()
 
@@ -99,7 +101,7 @@ def avito_chats(request):
 
 @login_required
 def get_messages(request, chat_id):
-    update_chat_status(chat_id, status=False)
+    update_chat_status(chat_id, status=False) # Снимаем уведомление о новом сообщении
     messages = AvitoMessage.objects.filter(chat_id=chat_id).order_by('timestamp')
     return JsonResponse({'messages': list(messages.values())})
 
@@ -228,7 +230,7 @@ def add_account(request):
                 # Проверяем, что объект успешно сохранен
                 if account:
                     save_access_token(access_token, form.cleaned_data['client_id'])
-                    register_webhook('94.241.173.208:5001', access_token)
+                    register_webhook(str(WEBHOOK_API), access_token)
                     return JsonResponse({'success': True})
                 else:
                     return JsonResponse({'success': False, 'error': 'Ошибка сохранения данных'})
@@ -264,6 +266,9 @@ def edit_account(request, account_id):
         'check_phone': account.check_phone,
         'tg_manager': account.tg_manager,
         'wait_time': account.wait_time,
+        'time_to_shutdown': account.time_to_shutdown,
+        'should_ping_manager': account.should_ping_manager,
+        'time_to_trigger': account.time_to_trigger,
         'user_id': account.user_id,
     })
 

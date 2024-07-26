@@ -13,6 +13,10 @@ import os
 from pathlib import Path
 
 from django.contrib import staticfiles
+from dotenv import load_dotenv
+
+# Загружаем переменные окружения из .env файла
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -27,6 +31,10 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
+# SECRET_KEY = 'django-insecure-5^^u7zy^#wd=$&7a3e3tmk0pj-j88t932m!dp2ayx1*cb$&0ix'
+#
+# DEBUG = False
+
 ALLOWED_HOSTS = ['*']
 
 
@@ -39,7 +47,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'channels',
     "mainapp.apps.MainappConfig"
 ]
 
@@ -136,6 +143,9 @@ USE_TZ = True
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'mainapp/static'),
+]
 
 
 # Default primary key field type
@@ -159,23 +169,48 @@ SESSION_COOKIE_AGE = 604800
 # Автоматически обновлять время сессии при каждом запросе (по желанию)
 SESSION_SAVE_EVERY_REQUEST = True
 
+WEBHOOK_API = os.getenv('WEBHOOK_API')
 
-# Logging
+
+LOG_LEVEL = os.getenv('DJANGO_LOG_LEVEL', 'INFO')
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'handlers': {
-        'file': {
-            'level': 'ERROR',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/error.log'),
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {pathname}:{lineno} {module} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
         },
     },
-    'loggers': {
-        'django': {
-            'handlers': ['file'],
-            'level': 'ERROR',
-            'propagate': True,
+    'handlers': {
+        'console': {
+            'level': LOG_LEVEL,
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
         },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'WARNING',
+    },
+    'django': {
+        'handlers': ['console'],
+        'level': LOG_LEVEL,
+        'propagate': True,
+    },
+    'django.request': {
+        'handlers': ['console'],
+        'level': LOG_LEVEL,
+        'propagate': False,
+    },
+    'django.db.backends': {
+        'handlers': ['console'],
+        'level': LOG_LEVEL,
+        'propagate': False,
     },
 }

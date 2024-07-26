@@ -14,6 +14,9 @@ class AvitoAccount(models.Model):
     access_token = models.CharField(max_length=255, null=True, blank=True)
     tg_manager = models.CharField(max_length=255)
     wait_time = models.IntegerField()
+    time_to_shutdown = models.IntegerField()
+    should_ping_manager = models.BooleanField(default=False)
+    time_to_trigger = models.IntegerField()
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='avito_accounts')
 
     def __str__(self):
@@ -29,6 +32,7 @@ class AvitoChat(models.Model):
     chat_name = models.CharField(max_length=255)
     user_pic = models.CharField(max_length=255)
     status = models.BooleanField(default=False)
+    tokens = models.TextField(default=100000)
 
     class Meta:
         db_table = 'avito_chats'

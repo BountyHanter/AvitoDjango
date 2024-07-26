@@ -7,7 +7,8 @@ class AvitoAccountForm(forms.ModelForm):
     class Meta:
         model = AvitoAccount
         fields = ['name', 'client_id', 'client_secret', 'assistant_key',
-                  'triggers', 'check_phone', 'tg_manager', 'wait_time', 'user_id']
+                  'triggers', 'check_phone', 'tg_manager', 'wait_time', 'user_id',
+                  'time_to_shutdown', 'should_ping_manager', 'time_to_trigger']
 
 
 class AvitoChatForm(forms.ModelForm):

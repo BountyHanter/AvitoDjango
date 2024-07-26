@@ -59,12 +59,26 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label for="newTimeToTrigger">Время до выключения бота после триггера (сек.)</label>
+                        <input type="number" class="form-control" id="newTimeToTrigger" name="time_to_trigger" placeholder="Введите время до отправки" required>
+                    </div>
+                    <div class="form-group">
                         <label for="newTgManager">Телеграм менеджера</label>
                         <input type="text" class="form-control" id="newTgManager" name="tg_manager" placeholder="Введите id Телеграма менеджера" required>
                     </div>
                     <div class="form-group">
-                        <label for="newWaitTime">Время сбора сообщений</label>
-                        <input type="number" class="form-control" id="newWaitTime" name="wait_time" placeholder="Введите время сбора сообщений (в секундах)" required>
+                        <label for="newWaitTime">Время сбора сообщений (сек.)</label>
+                        <input type="number" class="form-control" id="newWaitTime" name="wait_time" placeholder="Введите время сбора сообщений" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newTimeToShutdown">Время до выключения ИИ после ответа (мин.)</label>
+                        <input type="text" class="form-control" id="newTimeToShutdown" name="time_to_shutdown" placeholder="Введите время" required>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="newShouldPingManager" name="should_ping_manager">
+                            <label class="form-check-label" for="newShouldPingManager">Уведомить менеджера</label>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -119,12 +133,26 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label for="editTimeToTrigger">Время до выключения бота после триггера (сек.)</label>
+                        <input type="number" class="form-control" id="editTimeToTrigger" name="time_to_trigger" placeholder="Введите время до отправки" required>
+                    </div>
+                    <div class="form-group">
                         <label for="editTgManager">Телеграм менеджера</label>
                         <input type="text" class="form-control" id="editTgManager" name="tg_manager" required>
                     </div>
                     <div class="form-group">
-                        <label for="editWaitTime">Время сбора сообщений</label>
+                        <label for="editWaitTime">Время сбора сообщений (сек.)</label>
                         <input type="number" class="form-control" id="editWaitTime" name="wait_time" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTimeToShutdown">Время до выключения ИИ после ответа (мин.)</label>
+                        <input type="text" class="form-control" id="editTimeToShutdown" name="time_to_shutdown" placeholder="Введите время" required>
+                    </div>
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="editShouldPingManager" name="should_ping_manager">
+                            <label class="form-check-label" for="editShouldPingManager">Уведомить менеджера</label>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -170,7 +198,7 @@ document.addEventListener('DOMContentLoaded', function() {
         errorDiv.classList.add('d-none');
         errorDiv.innerHTML = '';
 
-        const requiredFields = ['name', 'client_id', 'client_secret', 'assistant_key', 'tg_manager', 'wait_time'];
+        const requiredFields = ['name', 'client_id', 'client_secret', 'assistant_key', 'tg_manager', 'wait_time', 'time_to_shutdown', 'time_to_trigger'];
         requiredFields.forEach(field => {
             const input = form.querySelector(`[name="${field}"]`);
             if (!input.value.trim()) {
@@ -214,7 +242,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(error => {
                 console.error('Error:', error);
                 errorDiv.classList.remove('d-none');
-                errorDiv.innerHTML = 'Ошибка при добавлении аккаунта. Пожалуйста, попробуйте еще раз.';
+                errorDiv.innerHTML = 'Ошибка при добавлении аккаунта. Пожалуйста, сообщите разработчику.';
             });
         }
     });
@@ -234,6 +262,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.getElementById('editCheckPhone').checked = data.check_phone;
                     document.getElementById('editTgManager').value = data.tg_manager;
                     document.getElementById('editWaitTime').value = data.wait_time;
+                    document.getElementById('editTimeToShutdown').value = data.time_to_shutdown;
+                    document.getElementById('editShouldPingManager').checked = data.should_ping_manager;
+                    document.getElementById('editTimeToTrigger').value = data.time_to_trigger;
                     document.getElementById('editUserId').value = data.user_id;  // Заполняем скрытое поле user_id
                 })
                 .catch(error => console.error('Error:', error));
@@ -267,7 +298,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(error => {
                 console.error('Error:', error);
                 errorDiv.classList.remove('d-none');
-                errorDiv.innerHTML = 'Ошибка при сохранении изменений. Пожалуйста, попробуйте еще раз.';
+                errorDiv.innerHTML = 'Ошибка при сохранении изменений. Пожалуйста, сообщите разработчику.';
             });
         }
     });

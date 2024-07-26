@@ -1,7 +1,7 @@
 from mainapp.models import AvitoMessage
 
 
-def generate_message_text(chat_id, author_id):
+def generate_message_text(chat_id, author_id, trigger=True):
     # Получаем все сообщения для данного chat_id, отсортированные по timestamp
     messages = AvitoMessage.objects.filter(chat_id=chat_id).order_by('timestamp')
 
@@ -12,6 +12,11 @@ def generate_message_text(chat_id, author_id):
         message_lines.append(f"{sender} - {message.content}")
 
     # Объединяем все строки в одно сообщение
-    messages_text = "\n\n".join(message_lines)
-    message_text = f"Требуется менеджер - https://www.avito.ru/profile/messenger/channel/{chat_id}\n\nСообщения:\n{messages_text}"
+    chat_messages = "\n\n".join(message_lines)
+    if trigger:
+        message_text = (f"Требуется менеджер - https://www.avito.ru/profile/messenger/channel/{chat_id}\n\n"
+                        f"Сообщения:\n{chat_messages}")
+    else:
+        message_text = (f"Клиент не ответил - https://www.avito.ru/profile/messenger/channel/{chat_id}\n\n"
+                        f"Сообщения:\n{chat_messages}")
     return message_text

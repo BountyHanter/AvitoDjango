@@ -3,13 +3,11 @@
 import threading
 import re
 from .models import AvitoAccount, AvitoIgnoredChat
+from .python_scripts.avito.create_timer import update_or_create_timer, add_to_ignored_chats
 from .python_scripts.avito.gpt.main_gpt import init_process_gpt
 from .python_scripts.avito.messages.insert_message_in_db import insert_message_in_database
+from .python_scripts.avito.globals import timers, trigger_timers, message_collections
 from .python_scripts.avito.telegram.send_to_manager import send_telegram_message
-
-# Глобальные переменные для таймеров и сообщений
-timers = {}
-message_collections = {}
 
 
 def parse_webhook_payload(payload):
@@ -37,9 +35,11 @@ def check_phone_number(content):
 
 def check_triggers(content, triggers):
     """Проверяет наличие триггеров в сообщении."""
+    print('Триггеры и контент')
+    print(triggers, content)
     for trigger in triggers.split('/'):
         if trigger.lower() in content.lower():
-            print('Чат добавлен в игнорируемые, так как сработал триггер')
+            print('Чат будет добавлен в игнорируемые, так как сработал триггер по слову')
             return True
     return False
 
@@ -61,6 +61,7 @@ def should_ignore_chat(user_id, chat_id, content):
     return False
 
 
+
 def process_webhook(user_id, author_id, chat_id, content):
     """Обрабатывает вебхук: проверка на игнорирование и сбор сообщений."""
     if should_ignore_webhook(user_id, author_id):
@@ -72,7 +73,6 @@ def process_webhook(user_id, author_id, chat_id, content):
 
 
 def collect_messages(chat_id, user_id, author_id, content):
-    global timers, message_collections
 
     # Инициализируем коллекцию сообщений, если она не существует
     if chat_id not in message_collections:
@@ -84,6 +84,7 @@ def collect_messages(chat_id, user_id, author_id, content):
     # Если таймер для этого чата еще не существует, создаем его
     if chat_id not in timers:
         try:
+            print(user_id)
             wait_time = AvitoAccount.objects.get(user_id=user_id).wait_time
         except AvitoAccount.DoesNotExist:
             print('Время в базе данных не найдено, по умолчанию 60 секунд')
@@ -96,7 +97,6 @@ def collect_messages(chat_id, user_id, author_id, content):
 
 
 def process_collected_messages(chat_id, user_id, author_id):
-    global message_collections, timers
 
     # Получаем все собранные сообщения для данного chat_id
     content = message_collections.pop(chat_id, None)
@@ -106,5 +106,12 @@ def process_collected_messages(chat_id, user_id, author_id):
         should_ignore_chat(user_id, chat_id, content)
         init_process_gpt(user_id, chat_id, content)
 
+        # Установим или обновим таймер для данного chat_id
+        update_or_create_timer(chat_id, user_id)
+
     # Удаляем таймер после обработки
     timers.pop(chat_id, None)
+
+
+def timeout(dd):
+    print('Таймер вышел')

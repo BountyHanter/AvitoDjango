@@ -7,7 +7,7 @@ from mainapp.python_scripts.avito.telegram.create_message import generate_messag
 from mainapp.python_scripts.avito.telegram.split_message import split_message
 
 
-def send_telegram_message(chat_id, author_id):
+def send_telegram_message(chat_id, author_id, trigger):
     tg_manager = get_tg_manager(author_id)
 
     if tg_manager is None:
@@ -16,7 +16,7 @@ def send_telegram_message(chat_id, author_id):
 
     token = '7069682876:AAFSpj-SHqEBECrzsd1916gCSwYp0gJBKrU'
 
-    message_text = generate_message_text(chat_id, author_id)
+    message_text = generate_message_text(chat_id, author_id, trigger)
     messages = split_message(message_text)
 
     for message in messages:
@@ -38,3 +38,25 @@ def send_telegram_message(chat_id, author_id):
             sleep(1)
         else:
             print('Ошибка при отправке сообщения:', response.status_code, response.text)
+
+
+def send_telegram_message_about_trigger(chat_id):
+    token = '7069682876:AAFSpj-SHqEBECrzsd1916gCSwYp0gJBKrU'
+
+    # URL для отправки сообщения
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+
+    # Параметры запроса
+    payload = {
+        'chat_id': '652982524',
+        'text': f"У чата {chat_id} в авито закончились токены"
+    }
+
+    # Отправка запроса
+    response = requests.post(url, json=payload)
+
+    # Проверка ответа
+    if response.status_code == 200:
+        print("Сообщение успешно отправлено администратору!")
+    else:
+        print('Ошибка при отправке сообщения:', response.status_code, response.text)

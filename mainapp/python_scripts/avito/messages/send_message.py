@@ -25,7 +25,7 @@ def send_message(*, user_id, message_text, chat_id, upd_status=False):
         response.raise_for_status()  # Будет вызывать исключение для не 2xx ответов
         insert_message_in_database(chat_id, user_id, message_text)
         if upd_status is True:
-            update_chat_status(chat_id)
+            update_chat_status(chat_id) # Помечаем чат как не прочитанный
         print('send_message.py')
         print('Сообщение успешно отправлено:', response.json())
     except requests.exceptions.HTTPError as e:
