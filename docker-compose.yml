@@ -4,8 +4,6 @@ services:
   web:
     build: .
     command: gunicorn --bind 0.0.0.0:3200 WhatsappAvitoDjango.wsgi:application
-    volumes:
-      - .:/app
     env_file:
       - .env
     ports:
