@@ -40,7 +40,7 @@ def init_process_gpt(user_id, chat_id, message):
         return
 
     access_token = load_access_token(user_id=user_id)
-    logging.debug("Сообщение клиента - ", message)
+    logging.debug(f"Сообщение клиента - {message}")
     thread_file_path = os.path.join(USER_DATA_DIR, f'thread_{chat_id}.json')
 
     if not os.path.exists(thread_file_path):

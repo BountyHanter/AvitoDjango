@@ -29,7 +29,7 @@ def take_access_token_from_avito(*, user_id=None, client_id=None, client_secret=
             client_secret = account.client_secret
         except AvitoAccount.DoesNotExist:
             logging.debug('authorization.py/take_access_token_from_avito')
-            logging.debug('Нет аккаунта с user_id:', user_id)
+            logging.debug(f'Нет аккаунта с user_id: {user_id}')
             return 400, 'Нет аккаунта с user_id'
 
     url = 'https://api.avito.ru/token/'
@@ -49,13 +49,13 @@ def take_access_token_from_avito(*, user_id=None, client_id=None, client_secret=
     if response.status_code == 200 and 'access_token' in response_data:
         access_token = response_data.get('access_token')
         logging.debug('authorization.py/take_access_token_from_avito')
-        logging.debug('Аутентификация прошла успешно. Токен доступа:', access_token)
+        logging.debug(f'Аутентификация прошла успешно. Токен доступа: {access_token}')
         if save_token_in_db is True:
             save_access_token(access_token, client_id)
         return 200, access_token
     else:
         logging.debug('authorization.py/take_access_token_from_avito')
-        logging.debug('Ошибка аутентификации. Код:', response.status_code, 'Описание:', response.text)
+        logging.debug(f'Ошибка аутентификации. Код: {response.status_code}. Описание {response.text}')
         return 400, response.text
 
 

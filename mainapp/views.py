@@ -73,7 +73,7 @@ def user_login(request: HttpRequest) -> HttpResponse:
             auth_login(request, user)
             return redirect('avito_accounts')
         else:
-            logging.debug("Invalid login attempt: ", username)  # Отладочное сообщение
+            logging.debug(f"Invalid login attempt: {username}")  # Отладочное сообщение
             return render(request, 'mainapp/login.html', {'error': 'Неправильный логин или пароль'})
     else:
         return render(request, 'mainapp/login.html')

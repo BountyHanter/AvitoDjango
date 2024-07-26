@@ -29,7 +29,7 @@ def send_message(*, user_id, message_text, chat_id, upd_status=False):
         if upd_status is True:
             update_chat_status(chat_id) # Помечаем чат как не прочитанный
         logging.debug('send_message.py')
-        logging.debug('Сообщение успешно отправлено:', response.json())
+        logging.debug(f'Сообщение успешно отправлено: {response.json()}')
     except requests.exceptions.HTTPError as e:
         if response.status_code == 403:
             logging.debug('send_message.py')
@@ -38,5 +38,5 @@ def send_message(*, user_id, message_text, chat_id, upd_status=False):
             send_message(user_id=user_id, message_text=message_text, chat_id=chat_id)  # Повторная отправка сообщения с новым токеном
         else:
             logging.debug('send_message.py')
-            logging.debug('Ошибка при отправке сообщения:', response.status_code, response.text)
+            logging.debug(f'Ошибка при отправке сообщения: {response.status_code}, {response.text}')
 

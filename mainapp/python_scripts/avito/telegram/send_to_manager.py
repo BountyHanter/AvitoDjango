@@ -38,7 +38,7 @@ def send_telegram_message(chat_id, author_id, trigger):
             logging.debug("Сообщение успешно отправлено менеджеру!")
             sleep(1)
         else:
-            logging.debug('Ошибка при отправке сообщения:', response.status_code, response.text)
+            logging.debug(f'Ошибка при отправке сообщения: {response.status_code}, {response.text}')
 
 
 def send_telegram_message_about_trigger(chat_id):
@@ -60,4 +60,4 @@ def send_telegram_message_about_trigger(chat_id):
     if response.status_code == 200:
         logging.debug("Сообщение успешно отправлено администратору!")
     else:
-        logging.debug('Ошибка при отправке сообщения:', response.status_code, response.text)
+        logging.debug(f'Ошибка при отправке сообщения: {response.status_code}, {response.text}')

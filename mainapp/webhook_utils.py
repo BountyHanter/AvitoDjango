@@ -23,7 +23,7 @@ def parse_webhook_payload(payload):
 def should_ignore_webhook(user_id, author_id):
     """Проверяет, нужно ли игнорировать вебхук на основе user_id и author_id."""
     if user_id == author_id or (author_id is not None and 0 <= author_id <= 10):
-        logging.debug("Webhook ignored due to user_id and author_id match or author_id in range 0-10.")
+        logging.debug("Webhook игнорируется так как он от аккаунта/системы")
         return True
     return False
 
@@ -35,8 +35,6 @@ def check_phone_number(content):
 
 def check_triggers(content, triggers):
     """Проверяет наличие триггеров в сообщении."""
-    logging.debug('Триггеры и контент')
-    logging.debug(triggers, content)
     for trigger in triggers.split('/'):
         if trigger.lower() in content.lower():
             logging.debug('Чат будет добавлен в игнорируемые, так как сработал триггер по слову')

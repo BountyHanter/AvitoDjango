@@ -22,7 +22,7 @@ def register_webhook(server_ip, access_token):
 
     if response.status_code in (200, 201):
         logging.debug('registr_webhook.py')
-        logging.debug('Webhook успешно зарегистрирован:', response.json())
+        logging.debug(f'Webhook успешно зарегистрирован: {response.json()}')
     else:
         logging.debug('registr_webhook.py')
-        logging.debug('Ошибка при регистрации webhook:', response.status_code, response.text)
+        logging.debug(f'Ошибка при регистрации webhook: {response.status_code}, {response.text}')

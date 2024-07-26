@@ -1,6 +1,8 @@
 import logging
 import sys
 import requests
+
+from WhatsappAvitoDjango.settings import WEBHOOK_API
 from .authorization import take_access_token_from_avito
 
 
@@ -10,7 +12,7 @@ def delete_webhook(client_id, client_secret):
         logging.debug('delete_webhook неудачно')
         logging.debug(access_token)
         return
-    address = 'http://94.241.173.208:5001/webhook'
+    address = f'http://{WEBHOOK_API}/webhook'
     url = "https://api.avito.ru/messenger/v1/webhook/unsubscribe"
     headers = {
         "Authorization": f"Bearer {access_token}",
@@ -25,8 +27,8 @@ def delete_webhook(client_id, client_secret):
     if response.status_code == 200:
         logging.debug('delete_webhook.py')
         logging.debug("Successfully unsubscribed from webhook.")
-        logging.debug("Response:", response.json())
+        logging.debug(f"Response: {response.json()}")
     else:
         logging.debug('delete_webhook.py')
         logging.debug(f"Failed to unsubscribe from webhook. Status code: {response.status_code}")
-        logging.debug("Response:", response.text)
+        logging.debug(f"Response: {response.text}")
