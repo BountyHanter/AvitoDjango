@@ -161,14 +161,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const chatId = this.dataset.chatId;
             const accountItem = this.closest('.account-item');
             const userId = accountItem.dataset.userId;
-            console.log(`Fetching messages for chat ID: ${chatId}, user ID: ${userId}`);
+            //console.log(`Fetching messages for chat ID: ${chatId}, user ID: ${userId}`);
             const response = await fetch(`/messages/${chatId}/`);
             const data = await response.json();
-            console.log('Received messages:', data.messages);
+            //console.log('Received messages:', data.messages);
             const messagesList = document.getElementById('messagesList');
             messagesList.innerHTML = '';
             data.messages.forEach(msg => {
-                console.log(`Processing message: ${msg.content}, sender ID: ${msg.sender_id}`);
+                //console.log(`Processing message: ${msg.content}, sender ID: ${msg.sender_id}`);
                 const messageContainer = document.createElement('div');
                 messageContainer.classList.add('message-container', msg.sender_id === userId ? 'right' : 'left');
                 const messageBubble = document.createElement('div');

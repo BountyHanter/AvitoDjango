@@ -2,7 +2,7 @@ import threading
 
 from mainapp.models import AvitoAccount, AvitoIgnoredChat
 from mainapp.python_scripts.avito.telegram.send_to_manager import send_telegram_message
-from mainapp.python_scripts.avito.globals import trigger_timers, timers
+from mainapp.python_scripts.avito.globals import trigger_timers, shutdown_timers
 
 import logging
 
@@ -25,14 +25,14 @@ def update_or_create_timer(chat_id, user_id):
         should_ping_manager = False
 
     # Если таймер уже существует, отмените его
-    if chat_id in timers:
+    if chat_id in shutdown_timers:
         logging.debug(f'Отмена существующего таймера для чата {chat_id}')
-        timers[chat_id].cancel()
+        shutdown_timers[chat_id].cancel()
 
     # Создаем новый таймер
     logging.debug(f'Создание нового таймера для чата {chat_id} на {wait_time} минут')
     timer = threading.Timer(wait_time * 60, add_to_ignored_chats, [chat_id, user_id, should_ping_manager, False])
-    timers[chat_id] = timer
+    shutdown_timers[chat_id] = timer
     timer.start()
 
 
@@ -46,4 +46,5 @@ def add_to_ignored_chats(chat_id, user_id, should_ping_manager, trigger):
         send_telegram_message(chat_id, user_id, trigger=trigger)
 
     # Удаляем таймер после выполнения задачи
-    timers.pop(chat_id, None)
+    shutdown_timers[chat_id].cancel()
+    shutdown_timers.pop(chat_id, None)

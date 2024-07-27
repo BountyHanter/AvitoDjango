@@ -6,8 +6,7 @@ from .models import AvitoAccount, AvitoIgnoredChat
 from .python_scripts.avito.create_timer import update_or_create_timer, add_to_ignored_chats
 from .python_scripts.avito.gpt.main_gpt import init_process_gpt
 from .python_scripts.avito.messages.insert_message_in_db import insert_message_in_database
-from .python_scripts.avito.globals import timers, trigger_timers, message_collections
-from .python_scripts.avito.telegram.send_to_manager import send_telegram_message
+from .python_scripts.avito.globals import timers, trigger_timers, message_collections, shutdown_timers
 
 
 def parse_webhook_payload(payload):
@@ -43,37 +42,46 @@ def check_triggers(content, triggers):
 
 
 def should_ignore_chat(user_id, chat_id, content):
-    """Проверяет, сообщение на триггеры и номер телефона."""
+    """Проверяет сообщение на триггеры и номер телефона."""
     try:
         account = AvitoAccount.objects.get(user_id=user_id)
+        # Проверяем номер телефона
         if account.check_phone and check_phone_number(content):
-            if chat_id in trigger_timers:
-                logging.debug(f'Отмена существующего триггерного таймера для чата {chat_id} (номер телефона)')
-                trigger_timers[chat_id].cancel()
+            if account.time_to_trigger:
+                if chat_id in trigger_timers and account.time_to_shutdown:
+                    logging.debug(f'Отмена существующего триггерного таймера для чата {chat_id} (номер телефона)')
+                    trigger_timers[chat_id].cancel()
 
-            logging.debug(f'Создание триггерного таймера для чата {chat_id} на {account.time_to_trigger} секунд (номер телефона)')
-            trigger_timer = threading.Timer(account.time_to_trigger, add_to_ignored_chats, [chat_id, user_id, True, True])
-            trigger_timers[chat_id] = trigger_timer
-            trigger_timer.start()
-            logging.debug(f'Чат {chat_id} будет добавлен в игнорируемые через {account.time_to_trigger} секунд, так как найден номер телефона')
-            timers[chat_id].cancel()
-            logging.debug(f'Отмена существующего таймера игнорирования для чата {chat_id} так как сработал триггер')
+                logging.debug(f'Создание триггерного таймера для чата {chat_id} на {account.time_to_trigger} секунд (номер телефона)')
+                trigger_timer = threading.Timer(account.time_to_trigger, add_to_ignored_chats, [chat_id, user_id, True, True])
+                trigger_timers[chat_id] = trigger_timer
+                trigger_timer.start()
+                logging.debug(f'Чат {chat_id} будет добавлен в игнорируемые через {account.time_to_trigger} секунд, так как найден номер телефона')
+                shutdown_timers[chat_id].cancel()
+                logging.debug(f'Отмена существующего таймера игнорирования для чата {chat_id} так как сработал триггер')
+            else:
+                add_to_ignored_chats(chat_id, user_id, True, True)
+                logging.debug(f'Чат {chat_id} немедленно добавлен в игнорируемые, так как найден номер телефона и нет времени ожидания')
+
+        # Проверяем триггеры
         elif account.triggers and check_triggers(content, account.triggers):
-            if chat_id in trigger_timers:
-                logging.debug(f'Отмена существующего триггерного таймера для чата {chat_id} (триггеры)')
-                trigger_timers[chat_id].cancel()
+            if account.time_to_trigger:
+                if chat_id in trigger_timers and account.time_to_shutdown:
+                    logging.debug(f'Отмена существующего триггерного таймера для чата {chat_id} (триггеры)')
+                    trigger_timers[chat_id].cancel()
 
-            logging.debug(f'Создание триггерного таймера для чата {chat_id} на {account.time_to_trigger} секунд (триггеры)')
-            trigger_timer = threading.Timer(account.time_to_trigger, add_to_ignored_chats, [chat_id, user_id, True, True])
-            trigger_timers[chat_id] = trigger_timer
-            trigger_timer.start()
-            logging.debug(f'Чат {chat_id} будет добавлен в игнорируемые через {account.time_to_trigger} секунд, так как сработал триггер')
-            timers[chat_id].cancel()
-            logging.debug(f'Отмена существующего таймера игнорирования для чата {chat_id} так как сработал триггер')
+                logging.debug(f'Создание триггерного таймера для чата {chat_id} на {account.time_to_trigger} секунд (триггеры)')
+                trigger_timer = threading.Timer(account.time_to_trigger, add_to_ignored_chats, [chat_id, user_id, True, True])
+                trigger_timers[chat_id] = trigger_timer
+                trigger_timer.start()
+                logging.debug(f'Чат {chat_id} будет добавлен в игнорируемые через {account.time_to_trigger} секунд, так как сработал триггер')
+                shutdown_timers[chat_id].cancel()
+                logging.debug(f'Отмена существующего таймера игнорирования для чата {chat_id} так как сработал триггер')
+            else:
+                add_to_ignored_chats(chat_id, user_id, True, True)
+                logging.debug(f'Чат {chat_id} немедленно добавлен в игнорируемые, так как сработал триггер и нет времени ожидания')
     except AvitoAccount.DoesNotExist:
         logging.error(f'Account with user_id {user_id} does not exist.')
-
-
 
 
 def process_webhook(user_id, author_id, chat_id, content):
@@ -111,17 +119,17 @@ def collect_messages(chat_id, user_id, author_id, content):
 
 
 def process_collected_messages(chat_id, user_id, author_id):
-
     # Получаем все собранные сообщения для данного chat_id
     content = message_collections.pop(chat_id, None)
     if content:
         logging.debug(f'Начало обработки сообщений для чата {chat_id}')
-        update_or_create_timer(chat_id, user_id)
+        if AvitoAccount.objects.get(user_id=user_id).time_to_shutdown:
+            update_or_create_timer(chat_id, user_id)
         insert_message_in_database(chat_id, sender_id=author_id, content=content)
         should_ignore_chat(user_id, chat_id, content)
         init_process_gpt(user_id, chat_id, content)
 
     # Удаляем таймер после обработки
-    if chat_id in timers:
-        logging.debug(f'Удаление таймера для чата {chat_id} после обработки')
-        timers.pop(chat_id, None)
+    timers.pop(chat_id, None)
+
+

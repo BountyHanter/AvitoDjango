@@ -29,7 +29,7 @@ def init_process_gpt(user_id, chat_id, message):
         if int(chat.tokens) == 0:  # Если у чата закончились токены
             logging.debug(f"Чат {chat_id} израсходовал токены")
             add_to_ignored_chats(chat_id, user_id, False, False)
-            send_telegram_message_about_trigger(chat_id)
+            send_telegram_message_about_trigger(chat_id, user_id)
             return
     except AvitoChat.DoesNotExist:
         # Если объект не существует, создаем его с начальным количеством токенов

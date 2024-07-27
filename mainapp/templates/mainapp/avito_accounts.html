@@ -59,8 +59,14 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="shouldShowTimeToTrigger" name="should_show_time_to_trigger">
+                            <label class="form-check-label" for="shouldShowTimeToTrigger">Указать время до срабатывания триггера бота</label>
+                        </div>
+                    </div>
+                    <div class="form-group d-none" id="timeToTriggerGroup">
                         <label for="newTimeToTrigger">Время до выключения бота после триггера (сек.)</label>
-                        <input type="number" class="form-control" id="newTimeToTrigger" name="time_to_trigger" placeholder="Введите время до отправки" required>
+                        <input type="number" class="form-control" id="newTimeToTrigger" name="time_to_trigger" placeholder="Введите время до отправки">
                     </div>
                     <div class="form-group">
                         <label for="newTgManager">Телеграм менеджера</label>
@@ -71,13 +77,19 @@
                         <input type="number" class="form-control" id="newWaitTime" name="wait_time" placeholder="Введите время сбора сообщений" required>
                     </div>
                     <div class="form-group">
-                        <label for="newTimeToShutdown">Время до выключения ИИ после ответа (мин.)</label>
-                        <input type="text" class="form-control" id="newTimeToShutdown" name="time_to_shutdown" placeholder="Введите время" required>
-                    </div>
-                    <div class="form-group">
                         <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="newShouldPingManager" name="should_ping_manager">
-                            <label class="form-check-label" for="newShouldPingManager">Уведомить менеджера</label>
+                            <input type="checkbox" class="form-check-input" id="shouldShowShutdownTime" name="should_show_shutdown_time">
+                            <label class="form-check-label" for="shouldShowShutdownTime">Указать время до выключения ИИ</label>
+                        </div>
+                    </div>
+                    <div class="form-group d-none" id="timeToShutdownGroup">
+                        <label for="newTimeToShutdown">Время до выключения ИИ после ответа (мин.)</label>
+                        <input type="text" class="form-control" id="newTimeToShutdown" name="time_to_shutdown" placeholder="Введите время">
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="newShouldPingManager" name="should_ping_manager">
+                                <label class="form-check-label" for="newShouldPingManager">Уведомить менеджера</label>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -133,8 +145,14 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="editShouldShowTimeToTrigger" name="should_show_time_to_trigger">
+                            <label class="form-check-label" for="editShouldShowTimeToTrigger">Указать время до срабатывания триггера бота</label>
+                        </div>
+                    </div>
+                    <div class="form-group d-none" id="editTimeToTriggerGroup">
                         <label for="editTimeToTrigger">Время до выключения бота после триггера (сек.)</label>
-                        <input type="number" class="form-control" id="editTimeToTrigger" name="time_to_trigger" placeholder="Введите время до отправки" required>
+                        <input type="number" class="form-control" id="editTimeToTrigger" name="time_to_trigger" placeholder="Введите время до отправки">
                     </div>
                     <div class="form-group">
                         <label for="editTgManager">Телеграм менеджера</label>
@@ -145,13 +163,19 @@
                         <input type="number" class="form-control" id="editWaitTime" name="wait_time" required>
                     </div>
                     <div class="form-group">
-                        <label for="editTimeToShutdown">Время до выключения ИИ после ответа (мин.)</label>
-                        <input type="text" class="form-control" id="editTimeToShutdown" name="time_to_shutdown" placeholder="Введите время" required>
-                    </div>
-                    <div class="form-group">
                         <div class="form-check">
-                            <input type="checkbox" class="form-check-input" id="editShouldPingManager" name="should_ping_manager">
-                            <label class="form-check-label" for="editShouldPingManager">Уведомить менеджера</label>
+                            <input type="checkbox" class="form-check-input" id="editShouldShowShutdownTime" name="should_show_shutdown_time">
+                            <label class="form-check-label" for="editShouldShowShutdownTime">Указать время до выключения ИИ</label>
+                        </div>
+                    </div>
+                    <div class="form-group d-none" id="editTimeToShutdownGroup">
+                        <label for="editTimeToShutdown">Время до выключения ИИ после ответа (мин.)</label>
+                        <input type="text" class="form-control" id="editTimeToShutdown" name="time_to_shutdown" placeholder="Введите время">
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="editShouldPingManager" name="should_ping_manager">
+                                <label class="form-check-label" for="editShouldPingManager">Уведомить менеджера</label>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -174,6 +198,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Функция для получения CSRF токена
     function getCookie(name) {
         let cookieValue = null;
         if (document.cookie && document.cookie !== '') {
@@ -191,6 +216,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const csrftoken = getCookie('csrftoken');
 
+    // Валидация формы
     function validateForm(form, errorDiv) {
         let isValid = true;
         let errorMessages = [];
@@ -198,12 +224,11 @@ document.addEventListener('DOMContentLoaded', function() {
         errorDiv.classList.add('d-none');
         errorDiv.innerHTML = '';
 
-        const requiredFields = ['name', 'client_id', 'client_secret', 'assistant_key', 'tg_manager', 'wait_time', 'time_to_shutdown', 'time_to_trigger'];
+        const requiredFields = form.querySelectorAll('[required]');
         requiredFields.forEach(field => {
-            const input = form.querySelector(`[name="${field}"]`);
-            if (!input.value.trim()) {
+            if (!field.value.trim()) {
                 isValid = false;
-                errorMessages.push(`Поле "${input.previousElementSibling.innerText}" обязательно для заполнения.`);
+                errorMessages.push(`Поле "${field.previousElementSibling.innerText}" обязательно для заполнения.`);
             }
         });
 
@@ -215,6 +240,29 @@ document.addEventListener('DOMContentLoaded', function() {
         return isValid;
     }
 
+    function toggleField(checkbox, fieldGroup) {
+        checkbox.addEventListener('change', function() {
+            if (this.checked) {
+                fieldGroup.classList.remove('d-none');
+                fieldGroup.querySelector('input').required = true;
+            } else {
+                fieldGroup.classList.add('d-none');
+                fieldGroup.querySelector('input').required = false;
+                fieldGroup.querySelector('input').value = '';
+                if (fieldGroup.querySelector('.form-check-input')) {
+                    fieldGroup.querySelector('.form-check-input').checked = false;
+                }
+            }
+        });
+    }
+
+    // Инициализация переключателей
+    toggleField(document.getElementById('shouldShowTimeToTrigger'), document.getElementById('timeToTriggerGroup'));
+    toggleField(document.getElementById('shouldShowShutdownTime'), document.getElementById('timeToShutdownGroup'));
+    toggleField(document.getElementById('editShouldShowTimeToTrigger'), document.getElementById('editTimeToTriggerGroup'));
+    toggleField(document.getElementById('editShouldShowShutdownTime'), document.getElementById('editTimeToShutdownGroup'));
+
+    // Обработчик создания аккаунта
     document.getElementById('addAccountBtn').addEventListener('click', function() {
         const form = document.getElementById('addAccountForm');
         const errorDiv = document.getElementById('addAccountError');
@@ -247,6 +295,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Обработчик редактирования аккаунта
     document.querySelectorAll('.list-group-item').forEach(item => {
         item.addEventListener('click', function() {
             const accountId = this.getAttribute('data-id');
@@ -266,6 +315,41 @@ document.addEventListener('DOMContentLoaded', function() {
                     document.getElementById('editShouldPingManager').checked = data.should_ping_manager;
                     document.getElementById('editTimeToTrigger').value = data.time_to_trigger;
                     document.getElementById('editUserId').value = data.user_id;  // Заполняем скрытое поле user_id
+
+                    const editShouldShowTimeToTriggerCheckbox = document.getElementById('editShouldShowTimeToTrigger');
+                    const editTimeToTriggerGroup = document.getElementById('editTimeToTriggerGroup');
+                    const editTimeToTrigger = document.getElementById('editTimeToTrigger');
+
+                    if (data.time_to_trigger) {
+                        editShouldShowTimeToTriggerCheckbox.checked = true;
+                        editTimeToTriggerGroup.classList.remove('d-none');
+                        editTimeToTrigger.required = true;
+                        editTimeToTrigger.value = data.time_to_trigger;
+                    } else {
+                        editShouldShowTimeToTriggerCheckbox.checked = false;
+                        editTimeToTriggerGroup.classList.add('d-none');
+                        editTimeToTrigger.required = false;
+                        editTimeToTrigger.value = '';
+                    }
+
+                    const editShouldShowShutdownTimeCheckbox = document.getElementById('editShouldShowShutdownTime');
+                    const editTimeToShutdownGroup = document.getElementById('editTimeToShutdownGroup');
+                    const editShouldPingManager = document.getElementById('editShouldPingManager');
+
+                    if (data.time_to_shutdown) {
+                        editShouldShowShutdownTimeCheckbox.checked = true;
+                        editTimeToShutdownGroup.classList.remove('d-none');
+                        editTimeToShutdownGroup.querySelector('input').required = true;
+                        editTimeToShutdownGroup.querySelector('input').value = data.time_to_shutdown;
+                        editShouldPingManager.checked = data.should_ping_manager;
+                    } else {
+                        editShouldShowShutdownTimeCheckbox.checked = false;
+                        editTimeToShutdownGroup.classList.add('d-none');
+                        editTimeToShutdownGroup.querySelector('input').required = false;
+                        editTimeToShutdownGroup.querySelector('input').value = '';
+                        editShouldPingManager.checked = false;
+                    }
+
                 })
                 .catch(error => console.error('Error:', error));
         });
@@ -323,5 +407,6 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => console.error('Error:', error));
     });
 });
+
 </script>
 {% endblock %}
