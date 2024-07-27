@@ -12,7 +12,7 @@ def delete_webhook(client_id, client_secret):
         logging.debug('delete_webhook неудачно')
         logging.debug(access_token)
         return
-    address = f'http://{WEBHOOK_API}/webhook'
+    address = f'http://{WEBHOOK_API}/webhook/'
     url = "https://api.avito.ru/messenger/v1/webhook/unsubscribe"
     headers = {
         "Authorization": f"Bearer {access_token}",
