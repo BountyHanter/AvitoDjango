@@ -4,7 +4,9 @@ from openai import OpenAI
 import openai
 from openai.types.beta.thread import ToolResources, Thread
 
-client = OpenAI(api_key='sk-proj-N9hPV0Qx5fMc1RAtQuijT3BlbkFJen7kN799hqZBvul8wCjT')
+from WhatsappAvitoDjango.settings import OPENAI_KEY
+
+client = OpenAI(api_key=OPENAI_KEY)
 
 
 # Отправляю сообщение

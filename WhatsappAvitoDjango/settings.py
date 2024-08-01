@@ -176,6 +176,7 @@ SESSION_COOKIE_AGE = 604800
 SESSION_SAVE_EVERY_REQUEST = True
 
 WEBHOOK_API = os.getenv('WEBHOOK_API')
+OPENAI_KEY = os.getenv('OPENAI_KEY')
 
 # Ensure the logs directory exists
 log_dir = os.path.join(BASE_DIR, 'logs')

@@ -12,6 +12,7 @@ from mainapp.python_scripts.avito.check_client_info import get_chat_info
 from mainapp.python_scripts.avito.load_access_token import load_access_token
 from mainapp.python_scripts.avito.messages.send_message import send_message
 from .gpt_api import serialize_thread
+from ..check_triggers import check_trigger_gpt_message
 from ..create_timer import add_to_ignored_chats
 from ..telegram.send_to_manager import send_telegram_message_about_trigger
 
@@ -49,6 +50,7 @@ def init_process_gpt(user_id, chat_id, message):
         save_thread_to_file(thread, thread_file_path)
         run_result = gpt.wait_on_run(run, thread)
         gpt_answer = gpt.pretty_print2(thread, message)
+        check_trigger_gpt_message(user_id, chat_id, gpt_answer)
         send_message(user_id=user_id, message_text=gpt_answer, chat_id=chat_id, upd_status=True)
     else:
         thread = take_thread_from_file(thread_file_path)
@@ -75,6 +77,7 @@ def init_process_gpt(user_id, chat_id, message):
             logging.debug(f"init_process_gpt Неизвестная ошибка: {e}")
 
         gpt_answer = gpt.pretty_print2(thread, gpt_message)
+        check_trigger_gpt_message(user_id, chat_id, gpt_answer)
         send_message(user_id=user_id, message_text=gpt_answer, chat_id=chat_id, upd_status=True)
 
 

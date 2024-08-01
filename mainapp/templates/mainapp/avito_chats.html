@@ -76,7 +76,7 @@
                     <ul class="list-group chat-list" data-account-id="{{ account.id }}">
                         {% for chat in chats %}
                         {% if chat.user_id == account.user_id %}
-                        <li class="list-group-item chat-item{% if chat.status %} highlighted-chat{% endif %}" data-chat-id="{{ chat.chat_id }}" data-status="{{ chat.status }}">
+                        <li class="list-group-item chat-item{% if chat.is_read %} highlighted-chat{% endif %}" data-chat-id="{{ chat.chat_id }}" data-status="{{ chat.is_read }}">
                             <div class="chat-list-item">
                                 <img src="{{ chat.user_pic }}" alt="Chat Picture">
                                 <div>

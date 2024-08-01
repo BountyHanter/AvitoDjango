@@ -19,7 +19,6 @@ import json
 
 from mainapp.python_scripts.avito.authorization import save_access_token, take_access_token_from_avito as token
 from .python_scripts.avito.delete_webhook import delete_webhook
-from .python_scripts.avito.globals import trigger_timers
 from .python_scripts.avito.messages.send_message import send_message
 from .python_scripts.avito.messages.upd_chat_status import update_chat_status
 from .python_scripts.avito.registr_webhook import register_webhook
@@ -195,9 +194,16 @@ def add_account(request):
             'client_secret': 'Client_secret',
             'assistant_key': 'Assistant_key',
             'triggers': 'Триггеры',
+            'triggers_ai': 'Триггеры ИИ',
             'tg_manager': 'Телеграм менеджера',
             'wait_time': 'Время сбора сообщений',
-            'check_phone': 'Триггер номера телефона'
+            'check_phone': 'Триггер номера телефона',
+            'time_to_trigger': 'Время до срабатывания триггера бота',
+            'time_to_shutdown': 'Время до выключения ИИ',
+            'should_ping_manager_after_shutdown': 'Уведомить менеджера после отключения',
+            'bot_text': 'Текст напоминания бота',
+            'bot_interval': 'Время до уведомления от бота',
+            'manager_interval': 'Время до уведомления менеджеру'
         }
 
         # Логирование полученных данных
@@ -262,13 +268,16 @@ def edit_account(request, account_id):
         'client_id': account.client_id,
         'client_secret': account.client_secret,
         'assistant_key': account.assistant_key,
-        'triggers': account.triggers,
-        'check_phone': account.check_phone,
-        'tg_manager': account.tg_manager,
         'wait_time': account.wait_time,
-        'time_to_shutdown': account.time_to_shutdown,
-        'should_ping_manager': account.should_ping_manager,
+        'tg_manager': account.tg_manager,
+        'triggers': account.triggers,
+        'triggers_ai': account.triggers_ai,
+        'check_phone': account.check_phone,
         'time_to_trigger': account.time_to_trigger,
+        'time_to_shutdown': account.time_to_shutdown,
+        'should_ping_manager_after_shutdown': account.should_ping_manager_after_shutdown,
+        'bot_text': account.bot_text,
+        'bot_interval': account.bot_interval,
         'user_id': account.user_id,
     })
 

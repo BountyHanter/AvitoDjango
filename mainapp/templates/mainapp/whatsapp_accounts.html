@@ -5,6 +5,17 @@
 
 {% block content %}
 
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    .custom-modal-width {
+        max-width: 40%; /* Установите желаемую ширину */
+    }
+    .form-check-label {
+        white-space: pre-wrap;
+        word-wrap: break-word; /* Убедитесь, что текст переносится */
+    }
+</style>
+
 
 <div class="container-fluid">
     <div class="row">
@@ -21,7 +32,7 @@
 
 <!-- Модальное окно добавления аккаунта -->
 <div class="modal fade" id="addAccountModal" tabindex="-1" role="dialog" aria-labelledby="addAccountModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog custom-modal-width" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="addAccountModalLabel">Добавить новый аккаунт</h5>
@@ -51,26 +62,87 @@
                         <label for="addWaitTime">Время сбора сообщений (в секундах)</label>
                         <input type="number" class="form-control" id="addWaitTime" name="wait_time" required>
                     </div>
-                    <div class="form-group">
+
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="addTriggersCheckbox" name="addTriggersCheckbox">
+                        <label class="form-check-label" for="addTriggersCheckbox">Добавить триггеры</label>
+                    </div>
+                    <div class="form-group" id="addTriggersField" style="display: none;">
                         <label for="addTriggers">Triggers (через запятую)</label>
                         <input type="text" class="form-control" id="addTriggers" name="triggers_user">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="addTriggerTimeCheckbox" name="addTriggerTimeCheckbox">
+                            <label class="form-check-label" for="addTriggerTimeCheckbox">Добавить время до срабатывания</label>
+                        </div>
+                        <div class="form-group" id="addTriggerTimeField" style="display: none;">
+                            <label for="addTriggerTime">Время до срабатывания (в секундах)</label>
+                            <input type="number" class="form-control" id="addTriggerTime" name="trigger_time">
+                        </div>
                     </div>
-                    <div class="form-group">
+
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="addTriggersAICheckbox" name="addTriggersAICheckbox">
+                        <label class="form-check-label" for="addTriggersAICheckbox">Добавить триггеры ИИ</label>
+                    </div>
+                    <div class="form-group" id="addTriggersAIField" style="display: none;">
                         <label for="addTriggersAI">Триггер ИИ (через запятую)</label>
                         <input type="text" class="form-control" id="addTriggersAI" name="triggers_AI">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="addTriggerAITimeCheckbox" name="addTriggerAITimeCheckbox">
+                            <label class="form-check-label" for="addTriggerAITimeCheckbox">Добавить время до срабатывания</label>
+                        </div>
+                        <div class="form-group" id="addTriggerAITimeField" style="display: none;">
+                            <label for="addTriggerAITime">Время до срабатывания (в секундах)</label>
+                            <input type="number" class="form-control" id="addTriggerAITime" name="trigger_AI_time">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="addBotText">Текст напоминания бота</label>
-                        <input type="text" class="form-control" id="addBotText" name="bot_text">
+
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="addBotReminderCheckbox" name="addBotReminderCheckbox">
+                        <label class="form-check-label" for="addBotReminderCheckbox">Добавить напоминание бота</label>
                     </div>
-                    <div class="form-group">
-                        <label for="addBotInterval">Интервал между уведомлениями бота (в минутах)</label>
-                        <input type="number" class="form-control" id="addBotInterval" name="bot_interval" required>
+                    <div id="addBotReminderFields" style="display: none;">
+                        <div class="form-group">
+                            <label for="addBotText">Текст напоминания бота</label>
+                            <input type="text" class="form-control" id="addBotText" name="bot_text">
+                        </div>
+                        <div class="form-group">
+                            <label for="addBotInterval">Время до уведомления от бота (в минутах)</label>
+                            <input type="number" class="form-control" id="addBotInterval" name="bot_interval">
+                        </div>
                     </div>
-                    <div class="form-group">
+
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="addManagerIntervalCheckbox" name="addManagerIntervalCheckbox">
+                        <label class="form-check-label" for="addManagerIntervalCheckbox">Добавить время до уведомления менеджеру</label>
+                    </div>
+                    <div class="form-group" id="addManagerIntervalField" style="display: none;">
                         <label for="addManagerInterval">Время до уведомления менеджеру (в минутах)</label>
-                        <input type="number" class="form-control" id="addManagerInterval" name="manager_interval" required>
+                        <input type="number" class="form-control" id="addManagerInterval" name="manager_interval">
                     </div>
+
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="addCallResponseCheckbox" name="addCallResponseCheckbox">
+                        <label class="form-check-label" for="addCallResponseCheckbox">Ответ на звонок</label>
+                    </div>
+                    <div class="form-group" id="addCallResponseField" style="display: none;">
+                        <label for="addCallResponseText">Текст ответа на входящий звонок</label>
+                        <input type="text" class="form-control" id="addCallResponseText" name="call_response_text">
+                    </div>
+
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="addBotStopCheckbox" name="addBotStopCheckbox">
+                        <label class="form-check-label" for="addBotStopCheckbox">Добавить остановку бота</label>
+                    </div>
+                    <div class="form-group" id="addBotStopField" style="display: none;">
+                        <label for="addBotStopTime">Время до остановки бота если не получен ответ (в минутах)</label>
+                        <input type="number" class="form-control" id="addBotStopTime" name="bot_stop_time">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="notifyManagerCheckbox" name="notify_manager">
+                            <label class="form-check-label" for="notifyManagerCheckbox">Уведомление менеджеру</label>
+                        </div>
+                    </div>
+
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input" id="addVoices" name="voices">
                         <label class="form-check-label" for="addVoices">Обработка голосовых</label>
@@ -84,7 +156,7 @@
 
 <!-- Модальное окно редактирования аккаунта -->
 <div class="modal fade" id="editAccountModal" tabindex="-1" role="dialog" aria-labelledby="editAccountModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog custom-modal-width" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="editAccountModalLabel">Редактировать аккаунт</h5>
@@ -100,37 +172,102 @@
                         <input type="text" class="form-control" id="editName" name="name" required>
                     </div>
                     <div class="form-group">
+                        <label for="editPhoneNumber">Номер телефона (начиная с 7, без плюса)</label>
+                        <input type="text" class="form-control" id="editPhoneNumber" name="phoneNumber" required>
+                    </div>
+                    <div class="form-group">
                         <label for="editAssistantKey">Assistant Key</label>
                         <input type="text" class="form-control" id="editAssistantKey" name="assistant_key" required>
                     </div>
                     <div class="form-group">
-                        <label for="editWhatsappManager">Whatsapp Manager</label>
+                        <label for="editWhatsappManager">Whatsapp Manager (начиная с 7, без плюса)</label>
                         <input type="text" class="form-control" id="editWhatsappManager" name="whatsapp_manager" required>
                     </div>
                     <div class="form-group">
                         <label for="editWaitTime">Время сбора сообщений (в секундах)</label>
                         <input type="number" class="form-control" id="editWaitTime" name="wait_time" required>
                     </div>
-                    <div class="form-group">
-                        <label for="editTriggers">Triggers</label>
+
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="editTriggersCheckbox" name="editTriggersCheckbox">
+                        <label class="form-check-label" for="editTriggersCheckbox">Добавить триггеры</label>
+                    </div>
+                    <div class="form-group" id="editTriggersField" style="display: none;">
+                        <label for="editTriggers">Triggers (через запятую)</label>
                         <input type="text" class="form-control" id="editTriggers" name="triggers_user">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="editTriggerTimeCheckbox" name="editTriggerTimeCheckbox">
+                            <label class="form-check-label" for="editTriggerTimeCheckbox">Добавить время до срабатывания</label>
+                        </div>
+                        <div class="form-group" id="editTriggerTimeField" style="display: none;">
+                            <label for="editTriggerTime">Время до срабатывания (в секундах)</label>
+                            <input type="number" class="form-control" id="editTriggerTime" name="trigger_time">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="editTriggersAI">Триггер ИИ</label>
+
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="editTriggersAICheckbox" name="editTriggersAICheckbox">
+                        <label class="form-check-label" for="editTriggersAICheckbox">Добавить триггеры ИИ</label>
+                    </div>
+                    <div class="form-group" id="editTriggersAIField" style="display: none;">
+                        <label for="editTriggersAI">Триггер ИИ (через запятую)</label>
                         <input type="text" class="form-control" id="editTriggersAI" name="triggers_AI">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="editTriggerAITimeCheckbox" name="editTriggerAITimeCheckbox">
+                            <label class="form-check-label" for="editTriggerAITimeCheckbox">Добавить время до срабатывания</label>
+                        </div>
+                        <div class="form-group" id="editTriggerAITimeField" style="display: none;">
+                            <label for="editTriggerAITime">Время до срабатывания (в секундах)</label>
+                            <input type="number" class="form-control" id="editTriggerAITime" name="trigger_AI_time">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="editBotText">Текст напоминания бота</label>
-                        <input type="text" class="form-control" id="editBotText" name="bot_text">
+
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="editBotReminderCheckbox" name="editBotReminderCheckbox">
+                        <label class="form-check-label" for="editBotReminderCheckbox">Добавить напоминание бота</label>
                     </div>
-                    <div class="form-group">
-                        <label for="editBotInterval">Интервал между уведомлениями бота (в минутах)</label>
-                        <input type="number" class="form-control" id="editBotInterval" name="bot_interval" required>
+                    <div id="editBotReminderFields" style="display: none;">
+                        <div class="form-group">
+                            <label for="editBotText">Текст напоминания бота</label>
+                            <input type="text" class="form-control" id="editBotText" name="bot_text">
+                        </div>
+                        <div class="form-group">
+                            <label for="editBotInterval">Время до уведомления от бота (в минутах)</label>
+                            <input type="number" class="form-control" id="editBotInterval" name="bot_interval">
+                        </div>
                     </div>
-                    <div class="form-group">
+
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="editManagerIntervalCheckbox" name="editManagerIntervalCheckbox">
+                        <label class="form-check-label" for="editManagerIntervalCheckbox">Добавить время до уведомления менеджеру после напоминания</label>
+                    </div>
+                    <div class="form-group" id="editManagerIntervalField" style="display: none;">
                         <label for="editManagerInterval">Время до уведомления менеджеру (в минутах)</label>
-                        <input type="number" class="form-control" id="editManagerInterval" name="manager_interval" required>
+                        <input type="number" class="form-control" id="editManagerInterval" name="manager_interval">
                     </div>
+
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="editCallResponseCheckbox" name="editCallResponseCheckbox">
+                        <label class="form-check-label" for="editCallResponseCheckbox">Ответ на звонок</label>
+                    </div>
+                    <div class="form-group" id="editCallResponseField" style="display: none;">
+                        <label for="editCallResponseText">Текст ответа на входящий звонок</label>
+                        <input type="text" class="form-control" id="editCallResponseText" name="call_response_text">
+                    </div>
+
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="editBotStopCheckbox" name="editBotStopCheckbox">
+                        <label class="form-check-label" for="editBotStopCheckbox">Добавить остановку бота</label>
+                    </div>
+                    <div class="form-group" id="editBotStopField" style="display: none;">
+                        <label for="editBotStopTime">Время до остановки бота если не получен ответ (в минутах)</label>
+                        <input type="number" class="form-control" id="editBotStopTime" name="bot_stop_time">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="editNotifyManagerCheckbox" name="notify_manager">
+                            <label class="form-check-label" for="editNotifyManagerCheckbox">Уведомление менеджеру</label>
+                        </div>
+                    </div>
+
                     <div class="form-check">
                         <input type="checkbox" class="form-check-input" id="editVoices" name="voices">
                         <label class="form-check-label" for="editVoices">Обработка голосовых</label>
@@ -143,7 +280,6 @@
         </div>
     </div>
 </div>
-
 <!-- Модальное окно ожидания QR-кода -->
 <div class="modal fade" id="qrCodeModal" tabindex="-1" role="dialog" aria-labelledby="qrCodeModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -160,5 +296,9 @@
         </div>
     </div>
 </div>
+
+<script src="{% static 'mainapp/js/whatsapp_add_account.js' %}"></script>
+<script src="{% static 'mainapp/js/whatsapp_edit_account.js' %}"></script>
+
 
 {% endblock %}

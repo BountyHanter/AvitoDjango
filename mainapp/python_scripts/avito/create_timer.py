@@ -14,6 +14,7 @@ def update_or_create_timer(chat_id, user_id):
         if chat_id in trigger_timers:
             logging.debug(f'Отмена существующего триггерного таймера для чата {chat_id}')
             trigger_timers[chat_id].cancel()
+            trigger_timers.pop(chat_id, None)
 
         avito_account = AvitoAccount.objects.get(user_id=user_id)
         wait_time = avito_account.time_to_shutdown
@@ -28,6 +29,7 @@ def update_or_create_timer(chat_id, user_id):
     if chat_id in shutdown_timers:
         logging.debug(f'Отмена существующего таймера для чата {chat_id}')
         shutdown_timers[chat_id].cancel()
+        shutdown_timers.pop(chat_id, None)
 
     # Создаем новый таймер
     logging.debug(f'Создание нового таймера для чата {chat_id} на {wait_time} минут')

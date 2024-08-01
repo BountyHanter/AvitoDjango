@@ -6,9 +6,11 @@ from .models import AvitoAccount, AvitoChat, AvitoMessage
 class AvitoAccountForm(forms.ModelForm):
     class Meta:
         model = AvitoAccount
-        fields = ['name', 'client_id', 'client_secret', 'assistant_key',
-                  'triggers', 'check_phone', 'tg_manager', 'wait_time', 'user_id',
-                  'time_to_shutdown', 'should_ping_manager', 'time_to_trigger']
+        fields = [
+            'name', 'client_id', 'client_secret', 'assistant_key', 'wait_time', 'tg_manager',
+            'triggers', 'triggers_ai', 'check_phone', 'time_to_trigger', 'time_to_shutdown',
+            'should_ping_manager_after_shutdown', 'bot_text', 'bot_interval', 'user_id',
+        ]
 
 
 class AvitoChatForm(forms.ModelForm):
