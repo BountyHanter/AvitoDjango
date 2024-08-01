@@ -28,6 +28,7 @@ def should_ignore_webhook(user_id, author_id):
         return True
     return False
 
+
 def process_webhook(user_id, author_id, chat_id, content):
     """Обрабатывает вебхук: проверка на игнорирование и сбор сообщений."""
     if should_ignore_webhook(user_id, author_id):

@@ -175,7 +175,10 @@ SESSION_COOKIE_AGE = 604800
 # Автоматически обновлять время сессии при каждом запросе (по желанию)
 SESSION_SAVE_EVERY_REQUEST = True
 
-WEBHOOK_API = os.getenv('WEBHOOK_API')
+if DEBUG is True:
+    WEBHOOK_API = os.getenv('WEBHOOK_API_DEV')
+else:
+    WEBHOOK_API = os.getenv('WEBHOOK_API')
 OPENAI_KEY = os.getenv('OPENAI_KEY')
 
 # Ensure the logs directory exists

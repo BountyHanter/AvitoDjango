@@ -23,10 +23,15 @@ def check_trigger_user_message(user_id, chat_id, content):
                 trigger_timers[chat_id] = trigger_timer
                 trigger_timer.start()
                 logging.debug(f'Чат {chat_id} будет добавлен в игнорируемые через {account.time_to_trigger} секунд, так как найден номер телефона')
-                shutdown_timers[chat_id].cancel()
-                user_notifications_timers[chat_id].cancel()
-                logging.debug(f'Отмена существующего таймера игнорирования для чата {chat_id} так как сработал триггер')
-                logging.debug(f'Отмена существующего таймера напоминания для чата {chat_id} так как сработал триггер')
+                if chat_id in shutdown_timers:
+                    shutdown_timers[chat_id].cancel()
+                    logging.debug(
+                        f'Отмена существующего таймера напоминания для чата {chat_id} так как сработал триггер')
+
+                if chat_id in user_notifications_timers:
+                    user_notifications_timers[chat_id].cancel()
+                    logging.debug(
+                        f'Отмена существующего таймера игнорирования для чата {chat_id} так как сработал триггер')
 
             else:
                 add_to_ignored_chats(chat_id, user_id, True, True)
@@ -44,16 +49,25 @@ def check_trigger_user_message(user_id, chat_id, content):
                 trigger_timers[chat_id] = trigger_timer
                 trigger_timer.start()
                 logging.debug(f'Чат {chat_id} будет добавлен в игнорируемые через {account.time_to_trigger} секунд, так как сработал триггер')
-                shutdown_timers[chat_id].cancel()
-                user_notifications_timers[chat_id].cancel()
-                logging.debug(f'Отмена существующего таймера напоминания для чата {chat_id} так как сработал триггер')
-                logging.debug(f'Отмена существующего таймера игнорирования для чата {chat_id} так как сработал триггер')
+                if chat_id in shutdown_timers:
+                    shutdown_timers[chat_id].cancel()
+                    logging.debug(
+                        f'Отмена существующего таймера напоминания для чата {chat_id} так как сработал триггер')
+
+                if chat_id in user_notifications_timers:
+                    user_notifications_timers[chat_id].cancel()
+                    logging.debug(
+                        f'Отмена существующего таймера игнорирования для чата {chat_id} так как сработал триггер')
             else:
                 add_to_ignored_chats(chat_id, user_id, True, True)
-                shutdown_timers[chat_id].cancel()
-                user_notifications_timers[chat_id].cancel()
-                logging.debug(f'Отмена существующего таймера игнорирования для чата {chat_id} так как сработал триггер')
-                logging.debug(f'Отмена существующего таймера напоминания для чата {chat_id} так как сработал триггер')
+                if chat_id in shutdown_timers:
+                    shutdown_timers[chat_id].cancel()
+                    logging.debug(
+                        f'Отмена существующего таймера напоминания для чата {chat_id} так как сработал триггер')
+                if chat_id in user_notifications_timers:
+                    user_notifications_timers[chat_id].cancel()
+                    logging.debug(
+                        f'Отмена существующего таймера игнорирования для чата {chat_id} так как сработал триггер')
                 logging.debug(f'Чат {chat_id} немедленно добавлен в игнорируемые, так как сработал триггер и нет времени ожидания')
     except AvitoAccount.DoesNotExist:
         logging.error(f'Account with user_id {user_id} does not exist.')

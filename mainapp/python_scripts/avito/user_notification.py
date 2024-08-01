@@ -13,7 +13,7 @@ def user_notification(user_id, chat_id):
             user_notifications_timers[chat_id].cancel()
             user_notifications_timers.pop(chat_id, None)
         account = AvitoAccount.objects.get(user_id=user_id)
-        chat = AvitoChat.objects.get(id=chat_id)
+        chat = AvitoChat.objects.get(chat_id=chat_id)
 
         if account.bot_interval and account.bot_text and chat.can_send_reminder is True:
             def send_reminder():

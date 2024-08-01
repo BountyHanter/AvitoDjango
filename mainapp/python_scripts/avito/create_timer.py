@@ -48,5 +48,6 @@ def add_to_ignored_chats(chat_id, user_id, should_ping_manager, trigger):
         send_telegram_message(chat_id, user_id, trigger=trigger)
 
     # Удаляем таймер после выполнения задачи
-    shutdown_timers[chat_id].cancel()
-    shutdown_timers.pop(chat_id, None)
+    if chat_id in shutdown_timers:
+        shutdown_timers[chat_id].cancel()
+        shutdown_timers.pop(chat_id, None)
