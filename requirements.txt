@@ -17,6 +17,7 @@ idna==3.7
 msgpack==1.0.8
 openai==1.35.13
 pydantic==2.8.2
+python-dotenv==1.0.1
 pydantic_core==2.20.1
 python-telegram-bot==21.4
 redis==5.0.7

@@ -1,4 +1,6 @@
+import os
 from time import sleep
+from dotenv import load_dotenv
 
 import requests
 
@@ -6,6 +8,7 @@ from mainapp.python_scripts.avito.messages.get_tg_manager import get_tg_manager
 from mainapp.python_scripts.avito.telegram.create_message import generate_message_text
 from mainapp.python_scripts.avito.telegram.split_message import split_message
 
+load_dotenv()  # take environment variables from .env.
 
 def send_telegram_message(chat_id, author_id):
     tg_manager = get_tg_manager(author_id)
@@ -14,7 +17,7 @@ def send_telegram_message(chat_id, author_id):
         print(f"No tg_manager found for author_id {author_id}")
         return
 
-    token = '7069682876:AAFSpj-SHqEBECrzsd1916gCSwYp0gJBKrU'
+    token = os.getenv("TELEGRAM_TOKEN")
 
     message_text = generate_message_text(chat_id, author_id)
     messages = split_message(message_text)

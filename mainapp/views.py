@@ -1,5 +1,6 @@
 # mainapp/views.py
 import logging
+import os
 import threading
 
 from django.contrib.auth import authenticate, login as auth_login
@@ -8,6 +9,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.http import JsonResponse, HttpRequest, HttpResponse
 from django.views.decorators.http import require_POST
+from dotenv import load_dotenv
 
 from .models import AvitoAccount, AvitoChat, AvitoMessage, AvitoIgnoredChat
 from .forms import AvitoAccountForm
@@ -26,7 +28,9 @@ from .webhook_utils import parse_webhook_payload, process_webhook
 
 logger = logging.getLogger(__name__)
 
+load_dotenv()  # take environment variables from .env.
 
+IP = os.getenv('WEBHOOK_API')
 @csrf_exempt
 def webhook_endpoint(request):
     if request.method == 'POST':
@@ -228,7 +232,7 @@ def add_account(request):
                 # Проверяем, что объект успешно сохранен
                 if account:
                     save_access_token(access_token, form.cleaned_data['client_id'])
-                    register_webhook('94.241.173.208:5001', access_token)
+                    register_webhook(IP, access_token)
                     return JsonResponse({'success': True})
                 else:
                     return JsonResponse({'success': False, 'error': 'Ошибка сохранения данных'})

@@ -11,8 +11,12 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
 
 from django.contrib import staticfiles
+
+load_dotenv()  # take environment variables from .env.
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -160,7 +164,7 @@ SESSION_COOKIE_AGE = 604800
 SESSION_SAVE_EVERY_REQUEST = True
 
 
-# Logging
+# # Logging
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
