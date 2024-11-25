@@ -1,5 +1,6 @@
 import os
 import json
+import re
 
 from django.conf import settings
 from django.db import IntegrityError
@@ -10,7 +11,6 @@ from . import gpt_api as gpt
 from mainapp.python_scripts.avito.check_client_info import get_chat_info
 from mainapp.python_scripts.avito.load_access_token import load_access_token
 from mainapp.python_scripts.avito.messages.send_message import send_message
-from .gpt_api import serialize_thread
 
 # Директория для хранения JSON-файлов
 USER_DATA_DIR = os.path.join(settings.MEDIA_ROOT, 'user_data')
@@ -18,6 +18,11 @@ USER_DATA_DIR = os.path.join(settings.MEDIA_ROOT, 'user_data')
 
 # Убедитесь, что директория существует
 os.makedirs(USER_DATA_DIR, exist_ok=True)
+
+def clean_gpt_answer(answer):
+    # Удаляем текст внутри квадратных скобок 【】, включая сами скобки
+    cleaned_answer = re.sub(r'【.*?】', '', answer)
+    return cleaned_answer.strip()  # Убираем лишние пробелы по краям
 
 
 def init_process_gpt(user_id, chat_id, message):
@@ -31,23 +36,33 @@ def init_process_gpt(user_id, chat_id, message):
     thread_file_path = os.path.join(USER_DATA_DIR, f'thread_{chat_id}.json')
 
     if not os.path.exists(thread_file_path):
-        create_chat_in_database(chat_id=chat_id, user_id=user_id, access_token=access_token)
-        thread, run, message = gpt.create_thread_and_run(user_input=message, id_assistant=assistant_key)
+        title = create_chat_in_database(chat_id=chat_id, user_id=user_id, access_token=access_token)
+        thread, run, message = gpt.create_thread_and_run(user_input=f' Пишут по поводу товара {title} , {message}', id_assistant=assistant_key)
         save_thread_to_file(thread, thread_file_path)
-        run_result = gpt.wait_on_run(run, thread)
+        run = gpt.wait_on_run(run, thread)
+        if run.status == 'requires_action':
+            run = gpt.gpt_call_function(run, thread)
         gpt_answer = gpt.pretty_print2(thread, message)
+        print('raw answer', gpt_answer)
+        gpt_answer = clean_gpt_answer(gpt_answer)
+        print('cleared', gpt_answer)
         send_message(user_id=user_id, message_text=gpt_answer, chat_id=chat_id, upd_status=True)
     else:
         thread = take_thread_from_file(thread_file_path)
         run, gpt_message = gpt.submit_message(assistant_key, thread, message)
-        run_result = gpt.wait_on_run(run, thread)
+        run = gpt.wait_on_run(run, thread)
+        if run.status == 'requires_action':
+            run = gpt.gpt_call_function(run, thread)
         gpt_answer = gpt.pretty_print2(thread, gpt_message)
+        print('raw answer', gpt_answer)
+        gpt_answer = clean_gpt_answer(gpt_answer)
+        print('cleared', gpt_answer)
         send_message(user_id=user_id, message_text=gpt_answer, chat_id=chat_id, upd_status=True)
 
 
 def create_chat_in_database(chat_id, user_id, access_token):
     # Получение информации о чате
-    user_pic, user_name = get_chat_info(user_id=user_id, chat_id=chat_id, access_token=access_token)
+    user_pic, user_name, title = get_chat_info(user_id=user_id, chat_id=chat_id, access_token=access_token)
 
     try:
         # Создаем новую запись в таблице chats
@@ -58,6 +73,7 @@ def create_chat_in_database(chat_id, user_id, access_token):
             user_pic=user_pic
         )
         print(f'Чат с chat_id {chat_id} успешно создан.')
+        return title
     except IntegrityError:
         print(f'Ошибка: Чат с chat_id {chat_id} уже существует.')
     except Exception as e:
@@ -65,7 +81,7 @@ def create_chat_in_database(chat_id, user_id, access_token):
 
 
 def save_thread_to_file(thread, filename):
-    thread_data = serialize_thread(thread)
+    thread_data = gpt.serialize_thread(thread)
     with open(filename, 'w') as f:
         f.write(json.dumps(thread_data, indent=4))
 

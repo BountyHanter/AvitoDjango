@@ -5,7 +5,7 @@ def register_webhook(server_ip, access_token):
     # URL для регистрации webhook
     api_url = 'https://api.avito.ru/messenger/v3/webhook'
     # Ваш URL для получения уведомлений
-    webhook_url = f'http://{server_ip}/webhook'
+    webhook_url = f'http://{server_ip}/webhook/'
 
     headers = {
         'Authorization': f'Bearer {access_token}',

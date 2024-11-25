@@ -104,3 +104,7 @@ docker-compose.yml
 .env.local
 .env.production
 .env.*.local
+
+mainapp/python_scripts/avito/google_api/token.json
+mainapp/python_scripts/avito/gpt/test.py
+mainapp/python_scripts/avito/google_api/client_secret.json
